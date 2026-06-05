@@ -21,8 +21,13 @@ const helpText = [
   "  start   Start the localhost-only editor (stub)"
 ].join("\n");
 
-export function runCli(args: string[]): CliResult {
+export interface CliOptions {
+  cwd?: string;
+}
+
+export function runCli(args: string[], options: CliOptions = {}): CliResult {
   const [command, ...rest] = args;
+  const cwd = options.cwd ?? process.cwd();
 
   if (!command || command === "--help" || command === "-h") {
     return { exitCode: 0, stdout: helpText };
@@ -30,7 +35,7 @@ export function runCli(args: string[]): CliResult {
 
   switch (command) {
     case "setup":
-      return { exitCode: 0, stdout: setupCommand() };
+      return { exitCode: 0, stdout: setupCommand(cwd) };
     case "doctor":
       return { exitCode: 0, stdout: doctorCommand() };
     case "start":
