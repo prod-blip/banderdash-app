@@ -1,8 +1,8 @@
 # Architecture
 
-Current status: intended architecture only.
+Current status: implementation foundation exists.
 
-This file describes the target architecture from `interactive-article-platform-implementation.md`. It must be updated once implementation begins so it reflects the actual codebase, not just the plan.
+The repo now has the initial npm workspace scaffold and an `ia` CLI shell with stub `setup`, `doctor`, and `start` commands. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -56,6 +56,12 @@ Export System
 ### CLI
 
 Responsible for setup, diagnostics, provider preflight, and starting the local app.
+
+Current implementation:
+
+- `cli/src/ia.ts` dispatches `setup`, `doctor`, and `start`.
+- `setup`, `doctor`, and `start` currently return explicit MVP stub output only.
+- `cli/src/ia.test.ts` covers help, command dispatch, `start --help`, and unknown command failure.
 
 Expected commands from the MVP spec:
 

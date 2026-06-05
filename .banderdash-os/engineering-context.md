@@ -6,23 +6,26 @@ It should stay concise and be updated when the real engineering state changes.
 
 ## Current State
 
-Banderdash is in pre-implementation.
+Banderdash implementation has started.
 
 The project currently has:
 
 - an implementation specification: `interactive-article-platform-implementation.md`;
-- the beginning of a project operating system in `.banderdash-os/`;
-- no product code implemented yet.
+- project operating docs in `.banderdash-os/`;
+- an npm workspace scaffold with intended MVP package/app boundaries;
+- an initial `ia` CLI shell with stub `setup`, `doctor`, and `start` commands plus command-dispatch tests.
+
+The product workflow, editor UI, SQLite state store, provider abstraction, component library, validators, sandbox QA, and export pipeline are not implemented yet.
 
 ## Current Phase
 
-Pre-implementation: governance setup and implementation planning.
+Implementation foundation: repository scaffold and CLI shell.
 
 ## Current Engineering Priority
 
-1. Finish the minimal Banderdash OS docs.
-2. Convert the implementation specification into actionable engineering tasks.
-3. Start implementation only after scope, acceptance criteria, and engineering rules are clear.
+1. Implement explicit setup config for local app settings.
+2. Implement the `ia doctor` check framework.
+3. Add the localhost-only SvelteKit editor shell.
 
 ## Important Current Docs
 
@@ -52,9 +55,9 @@ Push back on:
 
 ## Latest Important Changes
 
-- Created `.banderdash-os/` as the project operating folder.
-- Created `.banderdash-os/README.md`.
-- Created `.banderdash-os/product-goal.md`.
+- Initialized the npm workspace scaffold and committed the Banderdash project docs/specs as the repository baseline.
+- Merged GitHub PR #1 (`pr-2-cli-shell`): added the initial `ia` CLI shell with stub `setup`, `doctor`, and `start` commands.
+- The next implementation slice should build real setup configuration, then doctor checks, then the localhost editor shell.
 
 ## Update Rule
 
