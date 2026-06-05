@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold and an `ia` CLI shell with stub `setup`, `doctor`, and `start` commands. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, and explicit local setup configuration creation/validation. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -60,8 +60,11 @@ Responsible for setup, diagnostics, provider preflight, and starting the local a
 Current implementation:
 
 - `cli/src/ia.ts` dispatches `setup`, `doctor`, and `start`.
-- `setup`, `doctor`, and `start` currently return explicit MVP stub output only.
-- `cli/src/ia.test.ts` covers help, command dispatch, `start --help`, and unknown command failure.
+- `cli/src/config.ts` defines the MVP local config schema, default config, config path resolution, read/write helpers, and validation.
+- `ia setup` creates `.banderdash/config.json` if missing and preserves existing config if present.
+- The default config binds the app to `127.0.0.1`, uses port `5173`, leaves the provider unconfigured, and sets local SQLite/export paths under `.banderdash/`.
+- `doctor` and `start` remain MVP stubs on `main`.
+- `cli/src/ia.test.ts` covers help, command dispatch, setup config creation/idempotency, config validation, `start --help`, and unknown command failure.
 
 Expected commands from the MVP spec:
 

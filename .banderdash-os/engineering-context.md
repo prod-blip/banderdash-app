@@ -13,19 +13,20 @@ The project currently has:
 - an implementation specification: `interactive-article-platform-implementation.md`;
 - project operating docs in `.banderdash-os/`;
 - an npm workspace scaffold with intended MVP package/app boundaries;
-- an initial `ia` CLI shell with stub `setup`, `doctor`, and `start` commands plus command-dispatch tests.
+- an `ia` CLI shell with `setup`, `doctor`, and `start` commands;
+- explicit local setup config creation and validation for `.banderdash/config.json`.
 
-The product workflow, editor UI, SQLite state store, provider abstraction, component library, validators, sandbox QA, and export pipeline are not implemented yet.
+The `doctor` command is still a stub on `main`. The product workflow, editor UI, SQLite state store, provider abstraction, component library, validators, sandbox QA, and export pipeline are not implemented yet.
 
 ## Current Phase
 
-Implementation foundation: repository scaffold and CLI shell.
+Implementation foundation: repository scaffold, CLI shell, and setup configuration.
 
 ## Current Engineering Priority
 
-1. Implement explicit setup config for local app settings.
-2. Implement the `ia doctor` check framework.
-3. Add the localhost-only SvelteKit editor shell.
+1. Land the `ia doctor` check framework on `main`.
+2. Add the localhost-only SvelteKit editor shell.
+3. Start real SQLite state setup after the editor shell exists.
 
 ## Important Current Docs
 
@@ -57,7 +58,8 @@ Push back on:
 
 - Initialized the npm workspace scaffold and committed the Banderdash project docs/specs as the repository baseline.
 - Merged GitHub PR #1 (`pr-2-cli-shell`): added the initial `ia` CLI shell with stub `setup`, `doctor`, and `start` commands.
-- The next implementation slice should build real setup configuration, then doctor checks, then the localhost editor shell.
+- Merged GitHub PR #2 (`pr-3-setup-config`) into `main`: `ia setup` now creates and validates `.banderdash/config.json` with local-only defaults.
+- GitHub PR #3 (`pr-4-doctor-framework`) is merged into `pr-3-setup-config`, not `main`; the doctor framework still needs to land on `main` before it becomes current implementation.
 
 ## Update Rule
 
