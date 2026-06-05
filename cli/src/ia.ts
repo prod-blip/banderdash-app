@@ -16,8 +16,8 @@ const helpText = [
   "Usage: ia <command>",
   "",
   "Commands:",
-  "  setup   Create local Banderdash configuration (stub)",
-  "  doctor  Run local diagnostics and preflight checks (stub)",
+  "  setup   Create local Banderdash configuration",
+  "  doctor  Run local diagnostics and preflight checks",
   "  start   Start the localhost-only editor (stub)"
 ].join("\n");
 
@@ -37,7 +37,7 @@ export function runCli(args: string[], options: CliOptions = {}): CliResult {
     case "setup":
       return { exitCode: 0, stdout: setupCommand(cwd) };
     case "doctor":
-      return { exitCode: 0, stdout: doctorCommand() };
+      return doctorCommand(cwd);
     case "start":
       return { exitCode: 0, stdout: startCommand(rest) };
     default:
