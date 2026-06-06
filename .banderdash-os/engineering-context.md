@@ -15,23 +15,24 @@ The project currently has:
 - an npm workspace scaffold with intended MVP package/app boundaries;
 - an `ia` CLI shell with `setup`, `doctor`, and `start` commands;
 - explicit local setup config creation and validation for `.banderdash/config.json`;
-- a real `ia doctor` check framework for local diagnostics/preflight.
+- a real `ia doctor` check framework for local diagnostics/preflight;
+- a localhost-only SvelteKit editor shell with placeholder workflow panels.
 
-The product workflow, editor UI, SQLite state store, provider abstraction, component library, validators, sandbox QA, and export pipeline are not implemented yet.
+The product workflow, SQLite state store, provider abstraction, component library, validators, sandbox QA, and export pipeline are not implemented yet.
 
 ## Current Phase
 
-Implementation foundation: repository scaffold, CLI shell, and setup configuration.
+Implementation foundation: repository scaffold, CLI shell, setup configuration, diagnostics, and editor shell.
 
 ## Current Engineering Priority
 
-1. Add the localhost-only SvelteKit editor shell.
-2. Start real SQLite state setup after the editor shell exists.
-3. Extend doctor with provider and SQLite checks once those subsystems exist.
+1. Start real SQLite state setup.
+2. Add shared ArticleDoc types and parsing after SQLite service foundation.
+3. Extend doctor with SQLite checks once the database subsystem exists.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, and 1.3 are landed on `main`, leaving 37 plan tasks. Do not treat that as 37 required PRs; the expected remaining reviewable PR count is roughly 22–27 if closely related small tasks are grouped carefully.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, and 1.4 are landed on `main`, leaving 36 plan tasks. Do not treat that as 36 required PRs; the expected remaining reviewable PR count is roughly 21–26 if closely related small tasks are grouped carefully.
 
 ## Important Current Docs
 
@@ -65,6 +66,7 @@ Push back on:
 - Merged GitHub PR #1 (`pr-2-cli-shell`): added the initial `ia` CLI shell with stub `setup`, `doctor`, and `start` commands.
 - Merged GitHub PR #2 (`pr-3-setup-config`) into `main`: `ia setup` now creates and validates `.banderdash/config.json` with local-only defaults.
 - Merged GitHub PR #4 (`pr-3-doctor-framework-main`) into `main`: re-landed PR #3's doctor framework from the stacked branch; `ia doctor` now runs real local diagnostics/preflight checks.
+- Added the localhost-only editor shell: `ia start` launches the SvelteKit editor bound to `127.0.0.1:5173` with placeholder workflow panels.
 
 ## Update Rule
 

@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .svelte-kit/
+.banderdash/
 build/
 coverage/
 .env

@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, and a real `ia doctor` diagnostics/preflight framework. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework, and a localhost-only SvelteKit editor shell. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -65,8 +65,8 @@ Current implementation:
 - The default config binds the app to `127.0.0.1`, uses port `5173`, leaves the provider unconfigured, and sets local SQLite/export paths under `.banderdash/`.
 - `ia doctor` runs typed local diagnostics/preflight checks and returns a failing exit code when required checks fail.
 - Current doctor checks cover Node.js version, local config validity, localhost-only binding, storage path readiness, and provider configuration placeholder status.
-- `start` remains an MVP stub on `main`.
-- `cli/src/ia.test.ts` covers help, command dispatch, setup config creation/idempotency, config validation, doctor before/after setup behavior, `start --help`, and unknown command failure.
+- `ia start` launches the SvelteKit editor dev server through npm, forcing `--host 127.0.0.1 --port 5173` and setting `HOST=127.0.0.1` / `PORT=5173`.
+- `cli/src/ia.test.ts` covers help, command dispatch, setup config creation/idempotency, config validation, doctor before/after setup behavior, localhost-only start command preparation, `start --help`, and unknown command failure.
 
 Expected commands from the MVP spec:
 
@@ -78,7 +78,16 @@ npx ia start
 
 ### Editor
 
-A local SvelteKit app for the writer-facing workflow:
+A local SvelteKit app for the writer-facing workflow.
+
+Current implementation:
+
+- `apps/editor` is a TypeScript SvelteKit workspace package.
+- `apps/editor/vite.config.ts` binds dev and preview servers to `127.0.0.1` with strict ports.
+- The current page is a non-persistent shell with placeholder panels for article input, touch-point review, preview, debug/history, and export.
+- No editor API routes, SQLite persistence, workflow execution, component preview, or export controls are implemented yet.
+
+Target responsibilities:
 
 - paste/write article;
 - view word count and document state;
