@@ -14,9 +14,10 @@ The project currently has:
 - project operating docs in `.banderdash-os/`;
 - an npm workspace scaffold with intended MVP package/app boundaries;
 - an `ia` CLI shell with `setup`, `doctor`, and `start` commands;
-- explicit local setup config creation and validation for `.banderdash/config.json`.
+- explicit local setup config creation and validation for `.banderdash/config.json`;
+- a real `ia doctor` check framework for local diagnostics/preflight.
 
-The `doctor` command is still a stub on `main`. The product workflow, editor UI, SQLite state store, provider abstraction, component library, validators, sandbox QA, and export pipeline are not implemented yet.
+The product workflow, editor UI, SQLite state store, provider abstraction, component library, validators, sandbox QA, and export pipeline are not implemented yet.
 
 ## Current Phase
 
@@ -24,9 +25,9 @@ Implementation foundation: repository scaffold, CLI shell, and setup configurati
 
 ## Current Engineering Priority
 
-1. Land the `ia doctor` check framework on `main`.
-2. Add the localhost-only SvelteKit editor shell.
-3. Start real SQLite state setup after the editor shell exists.
+1. Add the localhost-only SvelteKit editor shell.
+2. Start real SQLite state setup after the editor shell exists.
+3. Extend doctor with provider and SQLite checks once those subsystems exist.
 
 ## Important Current Docs
 
@@ -59,7 +60,7 @@ Push back on:
 - Initialized the npm workspace scaffold and committed the Banderdash project docs/specs as the repository baseline.
 - Merged GitHub PR #1 (`pr-2-cli-shell`): added the initial `ia` CLI shell with stub `setup`, `doctor`, and `start` commands.
 - Merged GitHub PR #2 (`pr-3-setup-config`) into `main`: `ia setup` now creates and validates `.banderdash/config.json` with local-only defaults.
-- GitHub PR #3 (`pr-4-doctor-framework`) is merged into `pr-3-setup-config`, not `main`; the doctor framework still needs to land on `main` before it becomes current implementation.
+- Merged GitHub PR #4 (`pr-3-doctor-framework-main`) into `main`: re-landed PR #3's doctor framework from the stacked branch; `ia doctor` now runs real local diagnostics/preflight checks.
 
 ## Update Rule
 
