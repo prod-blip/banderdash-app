@@ -65,11 +65,27 @@ describe("ia CLI", () => {
     expect(result.errors[0]).toContain("Run `ia setup` first");
   });
 
-  it("dispatches doctor", () => {
-    const result = runCli(["doctor"]);
+  it("reports failed doctor checks before setup", () => {
+    const cwd = makeTempDir();
+    const result = runCli(["doctor"], { cwd });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toContain("Banderdash doctor");
+    expect(result.stdout).toContain("Local config");
+    expect(result.stdout).toContain("Run `ia setup` first");
+  });
+
+  it("runs doctor checks after setup", () => {
+    const cwd = makeTempDir();
+
+    runCli(["setup"], { cwd });
+    const result = runCli(["doctor"], { cwd });
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("Banderdash doctor");
+    expect(result.stdout).toContain("✓ Local config");
+    expect(result.stdout).toContain("✓ Local-only host");
+    expect(result.stdout).toContain("! Provider");
+    expect(result.stdout).toContain("Result: ready for current MVP slice.");
   });
 
   it("dispatches start help", () => {
