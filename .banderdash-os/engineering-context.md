@@ -29,6 +29,10 @@ Implementation foundation: repository scaffold, CLI shell, and setup configurati
 2. Start real SQLite state setup after the editor shell exists.
 3. Extend doctor with provider and SQLite checks once those subsystems exist.
 
+## MVP Plan Progress
+
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, and 1.3 are landed on `main`, leaving 37 plan tasks. Do not treat that as 37 required PRs; the expected remaining reviewable PR count is roughly 22–27 if closely related small tasks are grouped carefully.
+
 ## Important Current Docs
 
 - `.banderdash-os/README.md`
