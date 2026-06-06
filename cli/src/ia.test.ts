@@ -95,6 +95,21 @@ describe("ia CLI", () => {
     expect(result.stdout).toContain("Usage: ia start");
   });
 
+  it("prepares start command with localhost-only binding", () => {
+    const cwd = makeTempDir();
+    const result = runCli(["start"], { cwd });
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("http://127.0.0.1:5173");
+    expect(result.startProcess).toMatchObject({
+      command: "npm",
+      cwd,
+      args: ["run", "dev", "--workspace", "@banderdash/editor", "--", "--host", "127.0.0.1", "--port", "5173"]
+    });
+    expect(result.startProcess?.env.HOST).toBe("127.0.0.1");
+    expect(result.startProcess?.env.PORT).toBe("5173");
+  });
+
   it("rejects unknown commands", () => {
     const result = runCli(["unknown"]);
 

@@ -13,13 +13,13 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "test": "vitest run --passWithNoTests",
-    "typecheck": "tsc --noEmit -p tsconfig.base.json",
+    "typecheck": "tsc --noEmit -p tsconfig.base.json && npm run typecheck --workspaces --if-present",
     "lint": "node scripts/lint-placeholder.mjs",
     "doctor": "node cli/dist/ia.js doctor"
   },
   "devDependencies": {
     "@types/node": "^22.15.30",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.2"
+    "vitest": "^4.1.8"
   }
 }
