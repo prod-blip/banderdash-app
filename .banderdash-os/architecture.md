@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework, a localhost-only SvelteKit editor shell, the first SQLite state-store foundation, and a shared article document model package. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework, a localhost-only SvelteKit editor shell, the first SQLite state-store foundation, and a shared article document model package with deterministic block parsing. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -125,9 +125,11 @@ Current implementation:
 - exports `ArticleDoc`, `Block`, `Span`, and `Signal` TypeScript types;
 - exports the MVP `BlockType` vocabulary: `paragraph`, `heading`, `list`, `quote`;
 - exports the MVP `SignalKind` vocabulary: `quantity`, `comparison`, `sequence`, `dataset`, `causal`, `geographic`, `jargon`, `thematic`;
-- provides lightweight runtime validators for the current document model.
+- provides lightweight runtime validators for the current document model;
+- counts pasted article words and enforces the 5,000-word MVP limit;
+- parses pasted prose into deterministic heading, paragraph, list, and quote blocks with stable IDs.
 
-The deterministic block parser, word limit enforcement, versioning, and block-level invalidation are not implemented yet.
+Article persistence, version services, and block-level invalidation are not implemented yet.
 
 ### SQLite State
 
