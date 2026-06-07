@@ -18,9 +18,10 @@ The project currently has:
 - a real `ia doctor` check framework for local diagnostics/preflight;
 - a localhost-only SvelteKit editor shell with placeholder workflow panels;
 - a backend SQLite service package with idempotent initial migrations;
-- shared ArticleDoc, Block, Span, and Signal types with lightweight runtime validators.
+- shared ArticleDoc, Block, Span, and Signal types with lightweight runtime validators;
+- deterministic pasted-prose block parsing with 5,000-word MVP limit enforcement.
 
-The block parser, article persistence services, product workflow, provider abstraction, component library, validators, sandbox QA, and export pipeline are not implemented yet.
+The article persistence services, product workflow, provider abstraction, component library, validators, sandbox QA, and export pipeline are not implemented yet.
 
 ## Current Phase
 
@@ -28,13 +29,13 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Implement deterministic block parser and 5,000-word limit in `@banderdash/doc-model`.
-2. Implement article persistence and version services.
-3. Extend doctor with SQLite checks once persistence paths are wired through config.
+1. Implement article persistence and version services on top of SQLite and `@banderdash/doc-model`.
+2. Extend doctor with SQLite checks once persistence paths are wired through config.
+3. Wire saved article input into the localhost editor shell.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, and 2.2 are landed on `main`, leaving 34 plan tasks. Do not treat that as 34 required PRs; the expected remaining reviewable PR count is roughly 20–25 if closely related small tasks are grouped carefully.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, and 2.3 are landed on `main`, leaving 33 plan tasks. Do not treat that as 33 required PRs; the expected remaining reviewable PR count is roughly 20–25 if closely related small tasks are grouped carefully.
 
 ## Important Current Docs
 
@@ -71,6 +72,7 @@ Push back on:
 - Added the localhost-only editor shell: `ia start` launches the SvelteKit editor bound to `127.0.0.1:5173` with placeholder workflow panels.
 - Added the SQLite state-store foundation: `backend` now opens local SQLite databases and runs idempotent initial migrations for MVP state tables.
 - Added the shared article document model: `@banderdash/doc-model` now exports ArticleDoc, Block, Span, and Signal types plus lightweight validators for the MVP vocabularies.
+- Added deterministic article text parsing: `@banderdash/doc-model` now splits pasted prose into heading, paragraph, list, and quote blocks with stable IDs and enforces the 5,000-word MVP limit.
 
 ## Update Rule
 
