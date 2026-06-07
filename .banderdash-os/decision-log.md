@@ -60,3 +60,14 @@ Keep `.banderdash-os/product-goal.md` general and quality-focused. Keep `interac
 
 Reason:
 The product goal should define purpose and quality bar. The implementation spec should define the current technical build plan.
+
+## 2026-06-07 — Use Node Built-in SQLite for the MVP State Foundation
+
+Decision:
+Use Node's built-in `node:sqlite` API for the first SQLite state-store foundation.
+
+Reason:
+The implementation plan preferred `better-sqlite3` unless install/platform issues appeared. In this repo path and current Node environment, `better-sqlite3` failed native installation because no prebuilt binary was available and `node-gyp`/make broke on the path containing spaces. The built-in SQLite API avoids native package installation and keeps the local-first state-store PR small and testable.
+
+Tradeoff:
+`node:sqlite` is currently experimental in this Node version, so revisit if it becomes unstable or if the project standardizes on a supported LTS Node/runtime.
