@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework, and a localhost-only SvelteKit editor shell. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework, a localhost-only SvelteKit editor shell, and the first SQLite state-store foundation. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -119,6 +119,14 @@ raw text
 ### SQLite State
 
 SQLite is intended to be the authoritative state store.
+
+Current implementation:
+
+- `backend` is a TypeScript workspace package for backend services.
+- `backend/src/services/db.ts` opens local SQLite databases and ensures parent storage directories exist.
+- `backend/src/services/migrations.ts` runs tracked SQL migrations idempotently.
+- `migrations/001_init.sql` creates the initial MVP state tables for articles, document versions/blocks, workflow runs/events, candidates, approvals, generated specs, validation/QA results, exports, and LLM logs.
+- The current SQLite implementation uses Node's built-in `node:sqlite` API because `better-sqlite3` hit native install/platform issues in the repo path.
 
 It stores document versions, workflow state, approvals, generated specs, validation results, QA results, and export records.
 
