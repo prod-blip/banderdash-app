@@ -1,9 +1,10 @@
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { pathToFileURL } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import { createDefaultConfig, readConfig, resolveConfigPath, validateConfig } from "./config.js";
-import { runCli } from "./ia.js";
+import { isCliEntrypoint, runCli } from "./ia.js";
 
 const tempDirs: string[] = [];
 
@@ -108,6 +109,19 @@ describe("ia CLI", () => {
     });
     expect(result.startProcess?.env.HOST).toBe("127.0.0.1");
     expect(result.startProcess?.env.PORT).toBe("5173");
+  });
+
+  it("recognizes npm bin symlinks as the CLI entrypoint", () => {
+    const cwd = makeTempDir();
+    const targetPath = join(cwd, "node_modules", "@banderdash", "cli", "dist", "ia.js");
+    const binPath = join(cwd, "node_modules", ".bin", "ia");
+
+    mkdirSync(dirname(targetPath), { recursive: true });
+    mkdirSync(dirname(binPath), { recursive: true });
+    writeFileSync(targetPath, "#!/usr/bin/env node\n");
+    symlinkSync(targetPath, binPath);
+
+    expect(isCliEntrypoint(pathToFileURL(targetPath).href, binPath)).toBe(true);
   });
 
   it("rejects unknown commands", () => {

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { doctorCommand } from "./commands/doctor.js";
 import { setupCommand } from "./commands/setup.js";
@@ -68,7 +69,24 @@ async function main(): Promise<void> {
   process.exitCode = result.exitCode;
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+function resolveEntrypointPath(path: string): string {
+  try {
+    return realpathSync(path);
+  } catch {
+    return path;
+  }
+}
+
+export function isCliEntrypoint(moduleUrl: string, argvPath = process.argv[1]): boolean {
+  if (!argvPath) {
+    return false;
+  }
+
+  const modulePath = fileURLToPath(moduleUrl);
+  return resolveEntrypointPath(modulePath) === resolveEntrypointPath(argvPath);
+}
+
+if (isCliEntrypoint(import.meta.url)) {
   main().catch((error: unknown) => {
     console.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;
