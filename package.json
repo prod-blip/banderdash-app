@@ -5,8 +5,8 @@
   "type": "module",
   "workspaces": [
     "packages/*",
-    "apps/*",
     "backend",
+    "apps/*",
     "cli",
     "sandbox"
   ],

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./services/articles": "./dist/services/articles.js",
     "./services/db": "./dist/services/db.js",
     "./services/migrations": "./dist/services/migrations.js"
   },
