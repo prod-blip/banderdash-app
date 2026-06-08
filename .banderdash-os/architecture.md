@@ -64,7 +64,7 @@ Current implementation:
 - `ia setup` creates `.banderdash/config.json` if missing and preserves existing config if present.
 - The default config binds the app to `127.0.0.1`, uses port `5173`, leaves the provider unconfigured, and sets local SQLite/export paths under `.banderdash/`.
 - `ia doctor` runs typed local diagnostics/preflight checks and returns a failing exit code when required checks fail.
-- Current doctor checks cover Node.js version, local config validity, localhost-only binding, storage path readiness, and provider configuration placeholder status.
+- Current doctor checks cover Node.js version, local config validity, localhost-only binding, storage path readiness, SQLite state-store initialization/current migrations, and provider configuration placeholder status.
 - `ia start` launches the SvelteKit editor dev server through npm, forcing `--host 127.0.0.1 --port 5173` and setting `HOST=127.0.0.1` / `PORT=5173`.
 - `cli/src/ia.test.ts` covers help, command dispatch, setup config creation/idempotency, config validation, doctor before/after setup behavior, localhost-only start command preparation, `start --help`, and unknown command failure.
 

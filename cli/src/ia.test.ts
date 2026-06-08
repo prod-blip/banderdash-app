@@ -85,6 +85,8 @@ describe("ia CLI", () => {
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("✓ Local config");
     expect(result.stdout).toContain("✓ Local-only host");
+    expect(result.stdout).toContain("✓ SQLite state");
+    expect(result.stdout).toContain("database opens and migrations are current");
     expect(result.stdout).toContain("! Provider");
     expect(result.stdout).toContain("Result: ready for current MVP slice.");
   });
