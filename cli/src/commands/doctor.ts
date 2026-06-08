@@ -1,5 +1,7 @@
 import { existsSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, resolve } from "node:path";
+import { connectDatabase } from "@banderdash/backend/services/db";
+import { runMigrations } from "@banderdash/backend/services/migrations";
 import { readConfig } from "../config.js";
 
 export type DoctorStatus = "pass" | "warn" | "fail";
@@ -32,6 +34,7 @@ export function runDoctorChecks(cwd: string): DoctorReport {
     checkConfig(configResult.errors),
     checkLocalHost(configResult.config?.app.host),
     checkStoragePaths(cwd, configResult.config?.storage.sqlitePath, configResult.config?.storage.exportsDirectory),
+    checkSqliteState(cwd, configResult.config?.storage.sqlitePath),
     checkProviderConfigured(configResult.config?.provider.name, configResult.config?.provider.model)
   ];
 
@@ -119,16 +122,59 @@ function checkStoragePaths(cwd: string, sqlitePath: string | undefined, exportsD
     };
   }
 
-  const configDirectoryExists = existsSync(dirname(join(cwd, sqlitePath)));
+  const sqliteDirectoryExists = existsSync(dirname(resolveConfiguredPath(cwd, sqlitePath)));
 
   return {
     id: "storage-paths",
     label: "Storage paths",
-    status: configDirectoryExists ? "pass" : "warn",
-    message: configDirectoryExists
+    status: sqliteDirectoryExists ? "pass" : "warn",
+    message: sqliteDirectoryExists
       ? `sqlite=${sqlitePath}; exports=${exportsDirectory}`
       : "config directory does not exist yet; run `ia setup`"
   };
+}
+
+function checkSqliteState(cwd: string, sqlitePath: string | undefined): DoctorCheck {
+  if (!sqlitePath) {
+    return {
+      id: "sqlite-state",
+      label: "SQLite state",
+      status: "fail",
+      message: "storage.sqlitePath must be configured"
+    };
+  }
+
+  const resolvedSqlitePath = resolveConfiguredPath(cwd, sqlitePath);
+  let db: ReturnType<typeof connectDatabase> | null = null;
+
+  try {
+    db = connectDatabase({ sqlitePath: resolvedSqlitePath });
+    runMigrations(db);
+
+    return {
+      id: "sqlite-state",
+      label: "SQLite state",
+      status: "pass",
+      message: "database opens and migrations are current"
+    };
+  } catch (error) {
+    return {
+      id: "sqlite-state",
+      label: "SQLite state",
+      status: "fail",
+      message: `could not initialize ${sqlitePath}: ${formatErrorMessage(error)}`
+    };
+  } finally {
+    db?.close();
+  }
+}
+
+function resolveConfiguredPath(cwd: string, configuredPath: string): string {
+  return resolve(cwd, configuredPath);
+}
+
+function formatErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 function checkProviderConfigured(providerName: string | undefined, model: string | null | undefined): DoctorCheck {

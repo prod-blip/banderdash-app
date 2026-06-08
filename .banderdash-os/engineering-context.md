@@ -15,7 +15,7 @@ The project currently has:
 - an npm workspace scaffold with intended MVP package/app boundaries;
 - an `ia` CLI shell with `setup`, `doctor`, and `start` commands;
 - explicit local setup config creation and validation for `.banderdash/config.json`;
-- a real `ia doctor` check framework for local diagnostics/preflight;
+- a real `ia doctor` check framework for local diagnostics/preflight, including SQLite state-store initialization/migration checks;
 - a localhost-only SvelteKit editor shell with placeholder workflow panels;
 - a backend SQLite service package with idempotent initial migrations;
 - shared ArticleDoc, Block, Span, and Signal types with lightweight runtime validators;
@@ -30,9 +30,9 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Extend doctor with SQLite checks once persistence paths are wired through config.
-2. Add editor API routes for create/load/update article operations.
-3. Wire saved article input into the localhost editor shell.
+1. Add editor API routes for create/load/update article operations.
+2. Wire saved article input into the localhost editor shell.
+3. Implement stale-action rejection and block-level invalidation.
 
 ## MVP Plan Progress
 
@@ -75,6 +75,7 @@ Push back on:
 - Added the shared article document model: `@banderdash/doc-model` now exports ArticleDoc, Block, Span, and Signal types plus lightweight validators for the MVP vocabularies.
 - Added deterministic article text parsing: `@banderdash/doc-model` now splits pasted prose into heading, paragraph, list, and quote blocks with stable IDs and enforces the 5,000-word MVP limit.
 - Added backend article persistence: `backend` can create versioned ArticleDocs, update them with expected-version checks, reject over-limit text, and load the latest materialized document.
+- Extended `ia doctor` with a SQLite state check that opens the configured local database and runs current migrations.
 
 ## Update Rule
 
