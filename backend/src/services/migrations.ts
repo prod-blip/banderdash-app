@@ -22,6 +22,10 @@ const MIGRATIONS = [
   {
     version: "001_init",
     filename: "001_init.sql"
+  },
+  {
+    version: "002_invalidation_columns",
+    filename: "002_invalidation_columns.sql"
   }
 ] as const;
 

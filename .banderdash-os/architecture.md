@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation, a shared article document model package with deterministic block parsing, and backend article persistence/version services. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, and backend article persistence/version services with stale-version rejection and block-level generated-state invalidation. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -132,9 +132,10 @@ Current implementation:
 - exports the MVP `SignalKind` vocabulary: `quantity`, `comparison`, `sequence`, `dataset`, `causal`, `geographic`, `jargon`, `thematic`;
 - provides lightweight runtime validators for the current document model;
 - counts pasted article words and enforces the 5,000-word MVP limit;
-- parses pasted prose into deterministic heading, paragraph, list, and quote blocks with stable IDs.
+- parses pasted prose into deterministic heading, paragraph, list, and quote blocks with stable IDs;
+- compares previous and next materialized blocks for MVP block-level invalidation by block id, type, and text.
 
-Backend article persistence/version services are implemented. Block-level invalidation is not implemented yet.
+Backend article persistence/version services and block-level invalidation are implemented.
 
 Current backend service implementation:
 
@@ -142,9 +143,9 @@ Current backend service implementation:
 - persists article rows, version snapshots, and materialized blocks to SQLite;
 - updates articles by creating new document versions;
 - checks expected versions on update and rejects stale writes;
+- on valid article updates, marks generated state tied to changed blocks as invalidated across candidates, approvals, generated specs, validation results, QA results, and candidate-linked exports;
 - loads the latest persisted materialized ArticleDoc.
 
-Block-level invalidation is not implemented yet.
 
 ### SQLite State
 
@@ -156,6 +157,7 @@ Current implementation:
 - `backend/src/services/db.ts` opens local SQLite databases and ensures parent storage directories exist.
 - `backend/src/services/migrations.ts` runs tracked SQL migrations idempotently.
 - `migrations/001_init.sql` creates the initial MVP state tables for articles, document versions/blocks, workflow runs/events, candidates, approvals, generated specs, validation/QA results, exports, and LLM logs.
+- `migrations/002_invalidation_columns.sql` adds invalidation timestamp/reason columns to generated-state tables that can become stale after article edits.
 - `backend/src/services/articles.ts` provides create/update/get services for versioned ArticleDocs. It uses `@banderdash/doc-model` to parse and validate the 5,000-word limit, persists version snapshots in `article_versions`, materializes blocks in `article_blocks`, and rejects updates when the caller's expected document version is stale.
 - The current SQLite implementation uses Node's built-in `node:sqlite` API because `better-sqlite3` hit native install/platform issues in the repo path.
 

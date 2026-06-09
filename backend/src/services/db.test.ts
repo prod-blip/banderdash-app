@@ -47,7 +47,7 @@ describe("SQLite migrations", () => {
         .prepare("select version from schema_migrations order by version")
         .all() as Array<{ version: string }>;
 
-      expect(rows).toEqual([{ version: "001_init" }]);
+      expect(rows).toEqual([{ version: "001_init" }, { version: "002_invalidation_columns" }]);
     } finally {
       db.close();
     }
