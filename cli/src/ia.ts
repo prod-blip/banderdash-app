@@ -27,7 +27,7 @@ export interface CliOptions {
   cwd?: string;
 }
 
-export function runCli(args: string[], options: CliOptions = {}): CliResult {
+export async function runCli(args: string[], options: CliOptions = {}): Promise<CliResult> {
   const [command, ...rest] = args;
   const cwd = options.cwd ?? process.cwd();
 
@@ -51,7 +51,7 @@ export function runCli(args: string[], options: CliOptions = {}): CliResult {
 }
 
 async function main(): Promise<void> {
-  const result = runCli(process.argv.slice(2));
+  const result = await runCli(process.argv.slice(2));
 
   if (result.stdout) {
     console.log(result.stdout);

@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, and backend article persistence/version services with stale-version rejection and block-level generated-state invalidation. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package, and backend article persistence/version services with stale-version rejection and block-level generated-state invalidation. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -64,7 +64,7 @@ Current implementation:
 - `ia setup` creates `.banderdash/config.json` if missing and preserves existing config if present.
 - The default config binds the app to `127.0.0.1`, uses port `5173`, leaves the provider unconfigured, and sets local SQLite/export paths under `.banderdash/`.
 - `ia doctor` runs typed local diagnostics/preflight checks and returns a failing exit code when required checks fail.
-- Current doctor checks cover Node.js version, local config validity, localhost-only binding, storage path readiness, SQLite state-store initialization/current migrations, and provider configuration placeholder status.
+- Current doctor checks cover Node.js version, local config validity, localhost-only binding, storage path readiness, SQLite state-store initialization/current migrations, and provider preflight status.
 - `ia start` launches the SvelteKit editor dev server through npm, forcing `--host 127.0.0.1 --port 5173` and setting `HOST=127.0.0.1` / `PORT=5173`.
 - `cli/src/ia.test.ts` covers help, command dispatch, setup config creation/idempotency, config validation, doctor before/after setup behavior, localhost-only start command preparation, `start --help`, and unknown command failure.
 
@@ -120,6 +120,19 @@ raw text
   -> Sandbox QA
   -> Export
 ```
+
+### Provider Abstraction
+
+`@banderdash/providers` defines the boundary workflow nodes must use for LLM access.
+
+Current implementation:
+
+- exports `LLMProvider`, message, call, result, streaming chunk, structured schema, provider health, and provider capability types;
+- includes a deterministic fake provider for tests and local workflow development;
+- includes `runProviderPreflight`, which checks auth, configured model availability, structured-output support, optional streaming support, and minimum context window;
+- `ia doctor` warns when no provider is configured and fails configured-provider preflight until a real adapter is implemented and available.
+
+Real provider adapters are not implemented yet.
 
 ### Document Model
 

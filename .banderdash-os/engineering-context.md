@@ -20,9 +20,10 @@ The project currently has:
 - a backend SQLite service package with idempotent initial migrations;
 - shared ArticleDoc, Block, Span, and Signal types with lightweight runtime validators;
 - deterministic pasted-prose block parsing with 5,000-word MVP limit enforcement;
-- backend article persistence services for creating, updating, versioning, invalidating changed-block generated state, and loading latest ArticleDocs.
+- backend article persistence services for creating, updating, versioning, invalidating changed-block generated state, and loading latest ArticleDocs;
+- a provider abstraction package with deterministic fake provider and preflight checks;
 
-The product workflow, provider abstraction, component library, validators, sandbox QA, and export pipeline are not implemented yet.
+The product workflow, real provider adapters, component library, validators, sandbox QA, and export pipeline are not implemented yet.
 
 ## Current Phase
 
@@ -30,13 +31,13 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Add provider abstraction and preflight checks.
-2. Start workflow candidate generation after provider preflight is in place.
+1. Implement first real provider adapter behind the provider interface.
+2. Start workflow candidate generation after provider adapter is available.
 3. Add audited `ReactiveValue` component path after first candidate workflow is testable.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, and 2.5 are landed on `main`, leaving 31 plan tasks. Do not treat that as 31 required PRs; the expected remaining reviewable PR count is roughly 20–25 if closely related small tasks are grouped carefully.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, and 4.2 are landed on `main`, leaving 29 plan tasks. Do not treat that as 29 required PRs; the expected remaining reviewable PR count is roughly 20–25 if closely related small tasks are grouped carefully.
 
 ## Important Current Docs
 
@@ -79,6 +80,7 @@ Push back on:
 - Added editor article API routes for creating, loading, and updating versioned ArticleDocs through the local SvelteKit server.
 - Wired the editor input panel to the article API routes so pasted prose can create and update saved local ArticleDoc drafts from the browser UI.
 - Added block-level invalidation: document model diffing identifies changed blocks, article updates reject stale versions before side effects, and generated state tied to changed blocks is marked invalidated in SQLite.
+- Added provider abstraction and preflight: `@banderdash/providers` defines LLM provider contracts, fake provider, structured/capability checks, and `ia doctor` provider preflight plumbing.
 
 ## Update Rule
 

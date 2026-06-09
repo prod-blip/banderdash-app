@@ -1,3 +1,4 @@
+import { createFakeProvider, runProviderPreflight } from "@banderdash/providers";
 import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { connectDatabase } from "@banderdash/backend/services/db";
@@ -18,8 +19,8 @@ export interface DoctorReport {
   exitCode: number;
 }
 
-export function doctorCommand(cwd = process.cwd()): { exitCode: number; stdout: string } {
-  const report = runDoctorChecks(cwd);
+export async function doctorCommand(cwd = process.cwd()): Promise<{ exitCode: number; stdout: string }> {
+  const report = await runDoctorChecks(cwd);
 
   return {
     exitCode: report.exitCode,
@@ -27,7 +28,7 @@ export function doctorCommand(cwd = process.cwd()): { exitCode: number; stdout: 
   };
 }
 
-export function runDoctorChecks(cwd: string): DoctorReport {
+export async function runDoctorChecks(cwd: string): Promise<DoctorReport> {
   const configResult = readConfig(cwd);
   const checks: DoctorCheck[] = [
     checkNodeVersion(),
@@ -35,7 +36,7 @@ export function runDoctorChecks(cwd: string): DoctorReport {
     checkLocalHost(configResult.config?.app.host),
     checkStoragePaths(cwd, configResult.config?.storage.sqlitePath, configResult.config?.storage.exportsDirectory),
     checkSqliteState(cwd, configResult.config?.storage.sqlitePath),
-    checkProviderConfigured(configResult.config?.provider.name, configResult.config?.provider.model)
+    ...(await checkProviderPreflight(configResult.config?.provider.name, configResult.config?.provider.model))
   ];
 
   const hasFailure = checks.some((check) => check.status === "fail");
@@ -177,22 +178,37 @@ function formatErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-function checkProviderConfigured(providerName: string | undefined, model: string | null | undefined): DoctorCheck {
+async function checkProviderPreflight(providerName: string | undefined, model: string | null | undefined): Promise<DoctorCheck[]> {
   if (!providerName || providerName === "unconfigured" || !model) {
-    return {
-      id: "provider-config",
-      label: "Provider",
-      status: "warn",
-      message: "provider preflight is not configured yet; later provider PR will make this required"
-    };
+    return [
+      {
+        id: "provider-config",
+        label: "Provider preflight",
+        status: "warn",
+        message: "provider is not configured; workflow runs will require provider setup"
+      }
+    ];
   }
 
-  return {
-    id: "provider-config",
-    label: "Provider",
-    status: "pass",
-    message: `${providerName} / ${model}`
-  };
+  const report = await runProviderPreflight(
+    createFakeProvider({
+      authOk: false,
+      authMessage: `${providerName} adapter is not implemented yet; configure a supported adapter before running workflows`,
+      capabilities: { models: [model] }
+    }),
+    {
+      model,
+      requiresStructuredOutput: true,
+      minContextWindowTokens: 8_000
+    }
+  );
+
+  return report.checks.map((check) => ({
+    id: check.id,
+    label: check.label,
+    status: check.status,
+    message: check.message
+  }));
 }
 
 function statusIcon(status: DoctorStatus): string {
