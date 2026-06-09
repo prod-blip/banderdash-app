@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, and the first provider-backed Analyst candidate-generation node. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, the first provider-backed Analyst candidate-generation node, and the first audited `ReactiveValue` component path. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -187,6 +187,13 @@ It stores document versions, workflow state, approvals, generated specs, validat
 ### Component Library
 
 The default generation path should use audited/config-driven Svelte components.
+
+Current implementation:
+
+- `@banderdash/components` is a TypeScript workspace package for audited interaction primitives.
+- It exports a component registry with lookup by pattern/name and prop validators/fallback generators.
+- `ReactiveValue` is the first registered audited component path. Its schema accepts bounded numeric parameters, a constrained add/multiply calculation, result/fallback labels, and rejects arbitrary formula strings.
+- `packages/components/src/ReactiveValue.svelte` renders fallback text, a keyboard-reachable range input, and an `aria-live` result without network calls, storage APIs, dynamic code, or raw HTML.
 
 Initial intended library patterns:
 
