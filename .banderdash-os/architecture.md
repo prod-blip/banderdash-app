@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework, a localhost-only SvelteKit editor shell with article API routes, the first SQLite state-store foundation, a shared article document model package with deterministic block parsing, and backend article persistence/version services. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation, a shared article document model package with deterministic block parsing, and backend article persistence/version services. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -84,7 +84,8 @@ Current implementation:
 
 - `apps/editor` is a TypeScript SvelteKit workspace package.
 - `apps/editor/vite.config.ts` binds dev and preview servers to `127.0.0.1` with strict ports.
-- The current page is a non-persistent shell with placeholder panels for article input, touch-point review, preview, debug/history, and export.
+- The editor home page now has a saved article draft panel that posts pasted prose to `POST /api/articles`, updates via `PUT /api/articles/:id`, displays the saved article id/version, and renders the persisted block breakdown.
+- The rest of the workflow panels are placeholders for touch-point review, preview, debug/history, and export.
 - `POST /api/articles` creates and persists an ArticleDoc from raw text.
 - `GET /api/articles/:id` loads the latest persisted ArticleDoc.
 - `PUT /api/articles/:id` updates an article using expected-version conflict checks.

@@ -16,7 +16,7 @@ The project currently has:
 - an `ia` CLI shell with `setup`, `doctor`, and `start` commands;
 - explicit local setup config creation and validation for `.banderdash/config.json`;
 - a real `ia doctor` check framework for local diagnostics/preflight, including SQLite state-store initialization/migration checks;
-- a localhost-only SvelteKit editor shell with placeholder workflow panels and article API routes;
+- a localhost-only SvelteKit editor shell with saved article input, placeholder workflow panels, and article API routes;
 - a backend SQLite service package with idempotent initial migrations;
 - shared ArticleDoc, Block, Span, and Signal types with lightweight runtime validators;
 - deterministic pasted-prose block parsing with 5,000-word MVP limit enforcement;
@@ -30,9 +30,9 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Wire saved article input into the localhost editor shell.
-2. Implement stale-action rejection and block-level invalidation.
-3. Add provider abstraction and preflight checks.
+1. Implement stale-action rejection and block-level invalidation.
+2. Add provider abstraction and preflight checks.
+3. Start workflow candidate generation after provider preflight is in place.
 
 ## MVP Plan Progress
 
@@ -77,6 +77,7 @@ Push back on:
 - Added backend article persistence: `backend` can create versioned ArticleDocs, update them with expected-version checks, reject over-limit text, and load the latest materialized document.
 - Extended `ia doctor` with a SQLite state check that opens the configured local database and runs current migrations.
 - Added editor article API routes for creating, loading, and updating versioned ArticleDocs through the local SvelteKit server.
+- Wired the editor input panel to the article API routes so pasted prose can create and update saved local ArticleDoc drafts from the browser UI.
 
 ## Update Rule
 
