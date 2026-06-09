@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, and backend article persistence/version services with stale-version rejection and block-level generated-state invalidation. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, and the first provider-backed Analyst candidate-generation node. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -105,6 +105,13 @@ Target responsibilities:
 ### Workflow Backend
 
 A TypeScript workflow layer with explicit stages rather than a free-roaming agent.
+
+Current implementation:
+
+- `backend/src/nodes/schemas/candidate.ts` defines the typed candidate output boundary for provider-backed candidate generation.
+- `backend/src/nodes/analyst.ts` runs the Analyst node through `LLMProvider.structured(...)` only; it checks structured-output capability, builds article/block-ID grounded prompts, validates returned candidate shape and article/version/block/span references, and persists proposed candidates to SQLite.
+- Candidate generation is testable with the deterministic fake provider and stores full candidate payloads in `candidates.payload_json` while using `candidates.block_id` for block-level invalidation.
+- Workflow graph persistence, cancellation, Critic, consent review, data-gap handling, component generation, validation, QA, and export are not implemented yet.
 
 Target flow:
 

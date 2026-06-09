@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./nodes/analyst": "./dist/nodes/analyst.js",
+    "./nodes/schemas/candidate": "./dist/nodes/schemas/candidate.js",
     "./services/articles": "./dist/services/articles.js",
     "./services/db": "./dist/services/db.js",
     "./services/migrations": "./dist/services/migrations.js"
@@ -14,6 +16,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@banderdash/doc-model": "*"
+    "@banderdash/doc-model": "*",
+    "@banderdash/providers": "*"
   }
 }
