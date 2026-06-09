@@ -106,6 +106,40 @@ describe("ia CLI", () => {
     expect(result.stdout).toContain("claude adapter is not implemented yet");
   });
 
+  it("fails openai-compatible provider preflight without an API key", async () => {
+    const cwd = makeTempDir();
+    await runCli(["setup"], { cwd });
+    const configPath = resolveConfigPath(cwd);
+    const config = createDefaultConfig();
+    config.provider = { name: "openai-compatible", mode: "api-env", model: "gpt-test" };
+    writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf8");
+
+    const previousCompatibleKey = process.env.OPENAI_COMPATIBLE_API_KEY;
+    const previousOpenAIKey = process.env.OPENAI_API_KEY;
+    delete process.env.OPENAI_COMPATIBLE_API_KEY;
+    delete process.env.OPENAI_API_KEY;
+
+    try {
+      const result = await runCli(["doctor"], { cwd });
+
+      expect(result.exitCode).toBe(1);
+      expect(result.stdout).toContain("✗ Provider auth");
+      expect(result.stdout).toContain("OPENAI_COMPATIBLE_API_KEY or OPENAI_API_KEY must be set");
+    } finally {
+      if (previousCompatibleKey === undefined) {
+        delete process.env.OPENAI_COMPATIBLE_API_KEY;
+      } else {
+        process.env.OPENAI_COMPATIBLE_API_KEY = previousCompatibleKey;
+      }
+
+      if (previousOpenAIKey === undefined) {
+        delete process.env.OPENAI_API_KEY;
+      } else {
+        process.env.OPENAI_API_KEY = previousOpenAIKey;
+      }
+    }
+  });
+
   it("dispatches start help", async () => {
     const result = await runCli(["start", "--help"]);
 
