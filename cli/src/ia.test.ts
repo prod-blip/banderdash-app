@@ -21,16 +21,16 @@ afterEach(() => {
 });
 
 describe("ia CLI", () => {
-  it("prints help when no command is provided", () => {
-    const result = runCli([]);
+  it("prints help when no command is provided", async () => {
+    const result = await runCli([]);
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("Usage: ia <command>");
   });
 
-  it("dispatches setup and writes default local config", () => {
+  it("dispatches setup and writes default local config", async () => {
     const cwd = makeTempDir();
-    const result = runCli(["setup"], { cwd });
+    const result = await runCli(["setup"], { cwd });
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("Banderdash setup");
@@ -41,11 +41,11 @@ describe("ia CLI", () => {
     expect(JSON.parse(rawConfig)).toEqual(createDefaultConfig());
   });
 
-  it("does not overwrite an existing setup config", () => {
+  it("does not overwrite an existing setup config", async () => {
     const cwd = makeTempDir();
 
-    runCli(["setup"], { cwd });
-    const result = runCli(["setup"], { cwd });
+    await runCli(["setup"], { cwd });
+    const result = await runCli(["setup"], { cwd });
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("Found existing local config");
@@ -66,9 +66,9 @@ describe("ia CLI", () => {
     expect(result.errors[0]).toContain("Run `ia setup` first");
   });
 
-  it("reports failed doctor checks before setup", () => {
+  it("reports failed doctor checks before setup", async () => {
     const cwd = makeTempDir();
-    const result = runCli(["doctor"], { cwd });
+    const result = await runCli(["doctor"], { cwd });
 
     expect(result.exitCode).toBe(1);
     expect(result.stdout).toContain("Banderdash doctor");
@@ -76,31 +76,46 @@ describe("ia CLI", () => {
     expect(result.stdout).toContain("Run `ia setup` first");
   });
 
-  it("runs doctor checks after setup", () => {
+  it("runs doctor checks after setup", async () => {
     const cwd = makeTempDir();
 
-    runCli(["setup"], { cwd });
-    const result = runCli(["doctor"], { cwd });
+    await runCli(["setup"], { cwd });
+    const result = await runCli(["doctor"], { cwd });
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("✓ Local config");
     expect(result.stdout).toContain("✓ Local-only host");
     expect(result.stdout).toContain("✓ SQLite state");
     expect(result.stdout).toContain("database opens and migrations are current");
-    expect(result.stdout).toContain("! Provider");
+    expect(result.stdout).toContain("! Provider preflight");
     expect(result.stdout).toContain("Result: ready for current MVP slice.");
   });
 
-  it("dispatches start help", () => {
-    const result = runCli(["start", "--help"]);
+  it("fails provider preflight when a configured provider adapter is unavailable", async () => {
+    const cwd = makeTempDir();
+    await runCli(["setup"], { cwd });
+    const configPath = resolveConfigPath(cwd);
+    const config = createDefaultConfig();
+    config.provider = { name: "claude", mode: "cli", model: "claude-sonnet" };
+    writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf8");
+
+    const result = await runCli(["doctor"], { cwd });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toContain("✗ Provider auth");
+    expect(result.stdout).toContain("claude adapter is not implemented yet");
+  });
+
+  it("dispatches start help", async () => {
+    const result = await runCli(["start", "--help"]);
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("Usage: ia start");
   });
 
-  it("prepares start command with localhost-only binding", () => {
+  it("prepares start command with localhost-only binding", async () => {
     const cwd = makeTempDir();
-    const result = runCli(["start"], { cwd });
+    const result = await runCli(["start"], { cwd });
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("http://127.0.0.1:5173");
@@ -126,10 +141,11 @@ describe("ia CLI", () => {
     expect(isCliEntrypoint(pathToFileURL(targetPath).href, binPath)).toBe(true);
   });
 
-  it("rejects unknown commands", () => {
-    const result = runCli(["unknown"]);
+  it("rejects unknown commands", async () => {
+    const result = await runCli(["unknown"]);
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain("Unknown command: unknown");
   });
 });
+
