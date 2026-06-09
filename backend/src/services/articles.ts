@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { countWords, isArticleDoc, parseBlocks, type ArticleDoc, type Block } from "@banderdash/doc-model";
+import { countWords, diffInvalidatedBlocks, isArticleDoc, parseBlocks, type ArticleDoc, type Block } from "@banderdash/doc-model";
 import type { BanderdashDatabase } from "./db.js";
 
 export interface ArticleServiceOptions {
@@ -99,6 +99,12 @@ export function createArticleService(options: ArticleServiceOptions): ArticleSer
           .run(article.version, JSON.stringify(article), article.id);
         insertArticleVersion(options.db, article);
         insertArticleBlocks(options.db, article);
+        invalidateGeneratedStateForChangedBlocks(options.db, {
+          articleId: article.id,
+          invalidatedAt: timestamp,
+          invalidatedBlockIds: diffInvalidatedBlocks(existingArticle.blocks, article.blocks).invalidatedBlockIds,
+          previousVersion: existingArticle.version
+        });
         options.db.exec("COMMIT;");
       } catch (error) {
         options.db.exec("ROLLBACK;");
@@ -175,6 +181,103 @@ function insertArticleBlocks(db: BanderdashDatabase, article: ArticleDoc): void 
       JSON.stringify(block)
     );
   });
+}
+
+interface InvalidateGeneratedStateOptions {
+  articleId: string;
+  invalidatedAt: string;
+  invalidatedBlockIds: string[];
+  previousVersion: number;
+}
+
+function invalidateGeneratedStateForChangedBlocks(
+  db: BanderdashDatabase,
+  options: InvalidateGeneratedStateOptions
+): void {
+  if (options.invalidatedBlockIds.length === 0) {
+    return;
+  }
+
+  const candidateIds = getCandidateIdsForBlocks(db, options.articleId, options.invalidatedBlockIds);
+  if (candidateIds.length === 0) {
+    return;
+  }
+
+  const generatedSpecIds = getGeneratedSpecIdsForCandidates(db, options.articleId, candidateIds);
+  const reason = `Article blocks changed in version ${options.previousVersion + 1}.`;
+
+  markRowsInvalidated(db, "candidates", "id", candidateIds, options.invalidatedAt, reason);
+  markRowsInvalidated(db, "approvals", "candidate_id", candidateIds, options.invalidatedAt, reason);
+  markRowsInvalidated(db, "generated_specs", "candidate_id", candidateIds, options.invalidatedAt, reason);
+  markRowsInvalidated(db, "validation_results", "generated_spec_id", generatedSpecIds, options.invalidatedAt, reason);
+  markRowsInvalidated(db, "qa_results", "generated_spec_id", generatedSpecIds, options.invalidatedAt, reason);
+  invalidateExportsForCandidates(db, options.articleId, candidateIds, options.invalidatedAt, reason);
+}
+
+function getCandidateIdsForBlocks(db: BanderdashDatabase, articleId: string, blockIds: string[]): string[] {
+  const placeholders = createPlaceholders(blockIds);
+  const rows = db
+    .prepare(`select id from candidates where article_id = ? and block_id in (${placeholders}) and invalidated_at is null`)
+    .all(articleId, ...blockIds) as Array<{ id: string }>;
+
+  return rows.map((row) => row.id);
+}
+
+function getGeneratedSpecIdsForCandidates(db: BanderdashDatabase, articleId: string, candidateIds: string[]): string[] {
+  if (candidateIds.length === 0) {
+    return [];
+  }
+
+  const placeholders = createPlaceholders(candidateIds);
+  const rows = db
+    .prepare(`select id from generated_specs where article_id = ? and candidate_id in (${placeholders})`)
+    .all(articleId, ...candidateIds) as Array<{ id: string }>;
+
+  return rows.map((row) => row.id);
+}
+
+function markRowsInvalidated(
+  db: BanderdashDatabase,
+  tableName: string,
+  idColumn: string,
+  ids: string[],
+  invalidatedAt: string,
+  reason: string
+): void {
+  if (ids.length === 0) {
+    return;
+  }
+
+  const placeholders = createPlaceholders(ids);
+  db.prepare(
+    `update ${tableName}
+      set invalidated_at = ?, invalidated_reason = ?
+      where ${idColumn} in (${placeholders}) and invalidated_at is null`
+  ).run(invalidatedAt, reason, ...ids);
+}
+
+function invalidateExportsForCandidates(
+  db: BanderdashDatabase,
+  articleId: string,
+  candidateIds: string[],
+  invalidatedAt: string,
+  reason: string
+): void {
+  if (candidateIds.length === 0) {
+    return;
+  }
+
+  const candidateIdPatterns = candidateIds.map((candidateId) => `%${candidateId}%`);
+  const conditions = candidateIdPatterns.map(() => "payload_json like ?").join(" or ");
+  db.prepare(
+    `update exports
+      set invalidated_at = ?, invalidated_reason = ?
+      where article_id = ? and invalidated_at is null and (${conditions})`
+  ).run(invalidatedAt, reason, articleId, ...candidateIdPatterns);
+}
+
+function createPlaceholders(values: string[]): string {
+  return values.map(() => "?").join(", ");
 }
 
 function getArticleRow(db: BanderdashDatabase, articleId: string): ArticleRow | undefined {
