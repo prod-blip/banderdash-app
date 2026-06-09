@@ -22,8 +22,9 @@ The project currently has:
 - deterministic pasted-prose block parsing with 5,000-word MVP limit enforcement;
 - backend article persistence services for creating, updating, versioning, invalidating changed-block generated state, and loading latest ArticleDocs;
 - a provider abstraction package with deterministic fake provider, OpenAI-compatible adapter, and preflight checks;
+- a provider-backed Analyst node that validates and persists proposed interaction candidates;
 
-The product workflow, Claude/Codex provider adapters, component library, validators, sandbox QA, and export pipeline are not implemented yet.
+The full product workflow, Claude/Codex provider adapters, component library, validators, sandbox QA, and export pipeline are not implemented yet.
 
 ## Current Phase
 
@@ -31,13 +32,13 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Start workflow candidate generation behind the provider interface.
-2. Add audited `ReactiveValue` component path after first candidate workflow is testable.
+1. Add audited `ReactiveValue` component path after candidate generation.
+2. Add Critic/consent review so generated candidates can be pruned and approved by the writer.
 3. Add additional provider adapters only if needed for local workflow verification.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, and 4.3 are landed on `main`, leaving 28 plan tasks. Do not treat that as 28 required PRs; the expected remaining reviewable PR count is roughly 20–25 if closely related small tasks are grouped carefully.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 6.2, and 6.3 are landed on `main`, leaving 26 plan tasks. Do not treat that as 26 required PRs; the expected remaining reviewable PR count is roughly 20–25 if closely related small tasks are grouped carefully.
 
 ## Important Current Docs
 
@@ -82,6 +83,7 @@ Push back on:
 - Added block-level invalidation: document model diffing identifies changed blocks, article updates reject stale versions before side effects, and generated state tied to changed blocks is marked invalidated in SQLite.
 - Added provider abstraction and preflight: `@banderdash/providers` defines LLM provider contracts, fake provider, structured/capability checks, and `ia doctor` provider preflight plumbing.
 - Added the first real provider adapter: `openai-compatible` supports environment-configured API keys/base URL, `/models` preflight, chat completions, structured JSON-schema calls, and streaming response parsing.
+- Added workflow candidate generation: the Analyst node uses structured provider output only, validates article/version/block/span references, and persists proposed interaction candidates for later critic/consent stages.
 
 ## Update Rule
 
