@@ -1,4 +1,4 @@
-import { createFakeProvider, runProviderPreflight } from "@banderdash/providers";
+import { createFakeProvider, createOpenAICompatibleProviderFromEnv, runProviderPreflight } from "@banderdash/providers";
 import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { connectDatabase } from "@banderdash/backend/services/db";
@@ -190,18 +190,20 @@ async function checkProviderPreflight(providerName: string | undefined, model: s
     ];
   }
 
-  const report = await runProviderPreflight(
-    createFakeProvider({
-      authOk: false,
-      authMessage: `${providerName} adapter is not implemented yet; configure a supported adapter before running workflows`,
-      capabilities: { models: [model] }
-    }),
-    {
-      model,
-      requiresStructuredOutput: true,
-      minContextWindowTokens: 8_000
-    }
-  );
+  const provider =
+    providerName === "openai-compatible"
+      ? createOpenAICompatibleProviderFromEnv()
+      : createFakeProvider({
+          authOk: false,
+          authMessage: `${providerName} adapter is not implemented yet; configure a supported adapter before running workflows`,
+          capabilities: { models: [model] }
+        });
+
+  const report = await runProviderPreflight(provider, {
+    model,
+    requiresStructuredOutput: true,
+    minContextWindowTokens: 8_000
+  });
 
   return report.checks.map((check) => ({
     id: check.id,

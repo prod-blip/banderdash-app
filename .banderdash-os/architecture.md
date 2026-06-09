@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package, and backend article persistence/version services with stale-version rejection and block-level generated-state invalidation. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, and backend article persistence/version services with stale-version rejection and block-level generated-state invalidation. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -130,9 +130,10 @@ Current implementation:
 - exports `LLMProvider`, message, call, result, streaming chunk, structured schema, provider health, and provider capability types;
 - includes a deterministic fake provider for tests and local workflow development;
 - includes `runProviderPreflight`, which checks auth, configured model availability, structured-output support, optional streaming support, and minimum context window;
-- `ia doctor` warns when no provider is configured and fails configured-provider preflight until a real adapter is implemented and available.
+- includes an OpenAI-compatible adapter that reads API credentials/base URL from environment variables, uses `/models` for auth/model discovery, and supports chat completions, JSON-schema structured output, and streaming response parsing;
+- `ia doctor` warns when no provider is configured and runs real preflight for `openai-compatible` configs.
 
-Real provider adapters are not implemented yet.
+Claude/Codex CLI adapters are not implemented yet.
 
 ### Document Model
 

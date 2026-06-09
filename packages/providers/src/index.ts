@@ -1,3 +1,5 @@
+export { createOpenAICompatibleProvider, createOpenAICompatibleProviderFromEnv } from "./adapters/openai-compatible.js";
+export type { OpenAICompatibleProviderOptions } from "./adapters/openai-compatible.js";
 export { createFakeProvider } from "./fake.js";
 export type { FakeProviderOptions } from "./fake.js";
 export { runProviderPreflight } from "./preflight.js";
