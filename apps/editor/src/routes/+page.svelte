@@ -5,6 +5,13 @@
     hasUnsavedArticleChanges,
     persistArticle
   } from "$lib/article-editor";
+  import {
+    canRunCandidateReview,
+    createInitialWorkflowReviewState,
+    recordCandidateConsent,
+    runCandidateReview,
+    type ConsentDecision
+  } from "$lib/workflow-review";
 
   interface ProductSection {
     title: string;
@@ -13,11 +20,6 @@
   }
 
   const productSections: ProductSection[] = [
-    {
-      title: "Touch-point review",
-      status: "Pending workflow",
-      description: "Meaningful interaction candidates will appear here for explicit writer approval."
-    },
     {
       title: "Preview",
       status: "Pending components",
@@ -36,10 +38,12 @@
   ];
 
   let editorState = createInitialArticleEditorState();
+  let workflowReviewState = createInitialWorkflowReviewState();
 
   $: wordCount = getArticleWordCount(editorState);
   $: hasUnsavedChanges = hasUnsavedArticleChanges(editorState);
   $: canSave = editorState.status !== "saving" && editorState.rawText.trim().length > 0 && hasUnsavedChanges;
+  $: canAnalyze = canRunCandidateReview(editorState.savedArticle, workflowReviewState.status) && !hasUnsavedChanges;
 
   async function saveArticleDraft() {
     editorState = {
@@ -48,6 +52,20 @@
       message: editorState.savedArticle ? "Updating saved local draft..." : "Creating saved local draft..."
     };
     editorState = await persistArticle(fetch, editorState);
+    workflowReviewState = createInitialWorkflowReviewState();
+  }
+
+  async function analyzeArticle() {
+    workflowReviewState = {
+      ...workflowReviewState,
+      status: "running",
+      message: "Running local Analyst and Critic review..."
+    };
+    workflowReviewState = await runCandidateReview(fetch, editorState.savedArticle, workflowReviewState);
+  }
+
+  async function consentToCandidate(candidateId: string, decision: ConsentDecision) {
+    workflowReviewState = await recordCandidateConsent(fetch, editorState.savedArticle, workflowReviewState, candidateId, decision);
   }
 </script>
 
@@ -123,6 +141,52 @@
   </article>
 
   <div class="side-panels">
+    <article class="panel touch-panel" aria-labelledby="touch-review-title">
+      <div class="panel-header">
+        <h2 id="touch-review-title">Touch-point review</h2>
+        <span class:live={workflowReviewState.status === "ready"}>{workflowReviewState.status === "ready" ? "Ready" : "Local analysis"}</span>
+      </div>
+      <p>{workflowReviewState.message}</p>
+      <button type="button" onclick={analyzeArticle} disabled={!canAnalyze}>
+        {workflowReviewState.status === "running" ? "Analyzing..." : "Analyze article"}
+      </button>
+      {#if hasUnsavedChanges && editorState.savedArticle}
+        <p class="hint">Save the latest draft before running analysis.</p>
+      {/if}
+      {#if workflowReviewState.candidates.length > 0}
+        <ol class="candidate-list">
+          {#each workflowReviewState.candidates as candidate}
+            <li>
+              <div class="candidate-heading">
+                <strong>{candidate.pattern}</strong>
+                <span>{workflowReviewState.consentByCandidateId[candidate.id] ?? candidate.status}</span>
+              </div>
+              <p>{candidate.rationale}</p>
+              <p><strong>Understanding loss:</strong> {candidate.understandingLossIfRemoved}</p>
+              <p><strong>Source block:</strong> {candidate.blockIds.join(", ")}</p>
+              <div class="candidate-actions">
+                <button
+                  type="button"
+                  onclick={() => consentToCandidate(candidate.id, "approved")}
+                  disabled={Boolean(workflowReviewState.consentByCandidateId[candidate.id])}
+                >
+                  Approve
+                </button>
+                <button
+                  type="button"
+                  class="secondary"
+                  onclick={() => consentToCandidate(candidate.id, "rejected")}
+                  disabled={Boolean(workflowReviewState.consentByCandidateId[candidate.id])}
+                >
+                  Reject
+                </button>
+              </div>
+            </li>
+          {/each}
+        </ol>
+      {/if}
+    </article>
+
     {#each productSections as section}
       <article class="panel">
         <div class="panel-header">
@@ -330,6 +394,45 @@
   .saved-blocks li span {
     display: inline-block;
     margin-bottom: 0.35rem;
+  }
+
+  .touch-panel {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .hint {
+    color: #7a4d00;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .candidate-list {
+    display: grid;
+    gap: 0.85rem;
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  .candidate-list li {
+    display: grid;
+    gap: 0.65rem;
+    border-top: 1px solid rgba(23, 32, 51, 0.1);
+    padding-top: 0.85rem;
+    color: #475569;
+  }
+
+  .candidate-heading,
+  .candidate-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  button.secondary {
+    color: #172033;
+    background: #edf2f7;
   }
 
   @media (max-width: 920px) {

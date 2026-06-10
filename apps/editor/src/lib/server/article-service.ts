@@ -14,14 +14,22 @@ interface LocalStorageConfig {
 let database: BanderdashDatabase | null = null;
 let articleService: ArticleService | null = null;
 
+export function getEditorDatabase(): BanderdashDatabase {
+  if (database) {
+    return database;
+  }
+
+  database = connectDatabase({ sqlitePath: resolveSqlitePath() });
+  runMigrations(database);
+  return database;
+}
+
 export function getEditorArticleService(): ArticleService {
   if (articleService) {
     return articleService;
   }
 
-  database = connectDatabase({ sqlitePath: resolveSqlitePath() });
-  runMigrations(database);
-  articleService = createArticleService({ db: database });
+  articleService = createArticleService({ db: getEditorDatabase() });
 
   return articleService;
 }
