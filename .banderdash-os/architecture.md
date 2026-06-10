@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, provider-backed Analyst candidate generation and Critic pruning nodes, an editor touch-point review path for local candidate analysis and writer consent, and the first audited `ReactiveValue` component path. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, provider-backed Analyst/Critic/Spec Agent nodes, an editor touch-point review path for local candidate analysis and writer consent, and the first audited `ReactiveValue` component path. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -115,8 +115,10 @@ Current implementation:
 - `backend/src/nodes/analyst.ts` runs the Analyst node through `LLMProvider.structured(...)` only; it checks structured-output capability, builds article/block-ID grounded prompts, validates returned candidate shape and article/version/block/span references, and persists proposed candidates to SQLite.
 - `backend/src/nodes/critic.ts` runs the Critic node through `LLMProvider.structured(...)` only; it applies the enact-meaning-not-decoration rule to proposed candidates, requires exactly one decision for each input candidate, prevents ID/reference/pattern drift, and persists `survived` or `rejected_by_critic` status updates to SQLite.
 - `backend/src/services/candidateConsent.ts` records writer approvals/rejections only for current-version, non-invalidated, Critic-surviving candidates.
+- `backend/src/nodes/schemas/componentSpec.ts` defines the library component spec boundary consumed by the Builder.
+- `backend/src/nodes/specAgent.ts` runs the Spec Agent through `LLMProvider.structured(...)` only; it selects writer-approved, Critic-surviving `ReactiveValue` candidates, validates provider specs against the audited component registry/prop schema, and persists valid specs to `generated_specs`.
 - Candidate generation and critic pruning are testable with the deterministic fake provider and store full candidate payloads in `candidates.payload_json` while using `candidates.block_id` for block-level invalidation.
-- The current editor route uses a deterministic local fake provider for visible smoke testing when running candidate review. Full provider selection, workflow graph persistence, cancellation, data-gap handling, component generation, validation, QA, and export are not implemented yet.
+- The current editor route uses a deterministic local fake provider for visible smoke testing when running candidate review. Full provider selection, workflow graph persistence, cancellation, data-gap handling, Builder output, validation, QA, and export are not implemented yet.
 
 Target flow:
 

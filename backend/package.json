@@ -6,7 +6,9 @@
   "exports": {
     "./nodes/analyst": "./dist/nodes/analyst.js",
     "./nodes/critic": "./dist/nodes/critic.js",
+    "./nodes/specAgent": "./dist/nodes/specAgent.js",
     "./nodes/schemas/candidate": "./dist/nodes/schemas/candidate.js",
+    "./nodes/schemas/componentSpec": "./dist/nodes/schemas/componentSpec.js",
     "./services/articles": "./dist/services/articles.js",
     "./services/candidateConsent": "./dist/services/candidateConsent.js",
     "./services/db": "./dist/services/db.js",
@@ -18,6 +20,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
+    "@banderdash/components": "*",
     "@banderdash/doc-model": "*",
     "@banderdash/providers": "*"
   }
