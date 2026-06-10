@@ -24,9 +24,10 @@ The project currently has:
 - a provider abstraction package with deterministic fake provider, OpenAI-compatible adapter, and preflight checks;
 - a provider-backed Analyst node and a provider-backed Critic node that validate, persist, and prune proposed interaction candidates;
 - an editor touch-point review path that can run local candidate analysis, show Critic-surviving candidates, and record writer approval/rejection;
+- a component spec schema and provider-backed Spec Agent that convert approved `ReactiveValue` candidates into persisted audited component specs;
 - an audited `ReactiveValue` component path with registry lookup, prop validation, fallback generation, and safe Svelte source;
 
-The full persisted workflow graph, Claude/Codex provider adapters, CompareToggle component path, validators, sandbox QA, and export pipeline are not implemented yet.
+The full persisted workflow graph, Claude/Codex provider adapters, CompareToggle component path, Builder, validators, sandbox QA, and export pipeline are not implemented yet.
 
 ## Current Phase
 
@@ -34,13 +35,13 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Add component spec schema and Spec Agent for approved `ReactiveValue` candidates.
-2. Add persisted workflow graph/run status around the Analyst -> Critic -> consent path.
+1. Add library-first Builder for approved `ReactiveValue` specs.
+2. Add persisted workflow graph/run status around the Analyst -> Critic -> consent -> Spec Agent path.
 3. Add additional provider adapters only if needed for local workflow verification.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 6.2, 6.3, 6.4, 6.5, 8.1, and 8.2 are landed on `main`, leaving 22 plan tasks. Do not treat that as 22 required PRs; the expected remaining reviewable PR count is roughly 20–25 if closely related small tasks are grouped carefully.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, and 9.2 are landed on `main`, leaving 20 plan tasks. Do not treat that as 20 required PRs; the expected remaining reviewable PR count is roughly 20–25 if closely related small tasks are grouped carefully.
 
 ## Important Current Docs
 
@@ -89,6 +90,7 @@ Push back on:
 - Added audited `ReactiveValue` component path: `@banderdash/components` now has registry lookup, schema validation, fallback generation, and a safe Svelte source component for bounded numeric interactions.
 - Added the Critic node: backend workflow can now use structured provider output to mark proposed candidates as `survived` or `rejected_by_critic` using the enact-meaning-not-decoration rule.
 - Added editor candidate review: saved drafts can run local Analyst/Critic review, display `ReactiveValue` candidates in Touch-point review, and record writer consent with expected-version safety.
+- Added the Spec Agent path: backend now validates component specs, uses structured provider output to generate `ReactiveValue` specs for approved candidates, validates audited props, and persists specs in SQLite.
 
 ## Update Rule
 
