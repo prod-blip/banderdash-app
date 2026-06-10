@@ -8,6 +8,7 @@
     "./nodes/critic": "./dist/nodes/critic.js",
     "./nodes/schemas/candidate": "./dist/nodes/schemas/candidate.js",
     "./services/articles": "./dist/services/articles.js",
+    "./services/candidateConsent": "./dist/services/candidateConsent.js",
     "./services/db": "./dist/services/db.js",
     "./services/migrations": "./dist/services/migrations.js"
   },
