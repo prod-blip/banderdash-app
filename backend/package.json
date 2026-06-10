@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./nodes/analyst": "./dist/nodes/analyst.js",
+    "./nodes/critic": "./dist/nodes/critic.js",
     "./nodes/schemas/candidate": "./dist/nodes/schemas/candidate.js",
     "./services/articles": "./dist/services/articles.js",
     "./services/db": "./dist/services/db.js",
