@@ -27,8 +27,9 @@ The project currently has:
 - a component spec schema and provider-backed Spec Agent that convert approved `ReactiveValue` candidates into persisted audited component specs;
 - a library-first Builder that converts valid `ReactiveValue` specs into audited component build units;
 - an audited `ReactiveValue` component path with registry lookup, prop validation, fallback generation, and safe Svelte source;
+- a static validator package shell with shared validation result/finding types;
 
-The full persisted workflow graph, Claude/Codex provider adapters, CompareToggle component path, validators, sandbox QA, and export pipeline are not implemented yet.
+The full persisted workflow graph, Claude/Codex provider adapters, CompareToggle component path, restricted-subset validator rules, sandbox QA, and export pipeline are not implemented yet.
 
 ## Current Phase
 
@@ -36,13 +37,13 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Add static validator package and hard-gate validation for library build units.
+1. Implement restricted-subset static checks and backend Static Validator node for library build units.
 2. Add persisted workflow graph/run status around the Analyst -> Critic -> consent -> Spec Agent -> Builder path.
 3. Add additional provider adapters only if needed for local workflow verification.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, and 9.3 are landed on `main`, leaving 19 plan tasks. Do not treat that as 19 required PRs; the expected remaining reviewable PR count is roughly 19–24 if closely related small tasks are grouped carefully.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, and 10.1 are landed on `main`, leaving 18 plan tasks. Do not treat that as 18 required PRs; the expected remaining reviewable PR count is roughly 18–23 if closely related small tasks are grouped carefully.
 
 ## Important Current Docs
 
@@ -93,6 +94,7 @@ Push back on:
 - Added editor candidate review: saved drafts can run local Analyst/Critic review, display `ReactiveValue` candidates in Touch-point review, and record writer consent with expected-version safety.
 - Added the Spec Agent path: backend now validates component specs, uses structured provider output to generate `ReactiveValue` specs for approved candidates, validates audited props, and persists specs in SQLite.
 - Added the library-first Builder path: backend now resolves valid `ReactiveValue` specs through the audited component registry and converts them into component build units for validator/export follow-up.
+- Added the static validator package shell: `@banderdash/validators` now defines shared validation finding/result types and a helper for pass/fail result construction.
 
 ## Update Rule
 
