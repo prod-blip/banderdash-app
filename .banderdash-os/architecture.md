@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, provider-backed Analyst/Critic/Spec Agent nodes, a library-first Builder node for audited `ReactiveValue` specs, a static validator package shell, an editor touch-point review path for local candidate analysis and writer consent, and the first audited `ReactiveValue` component path. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, provider-backed Analyst/Critic/Spec Agent nodes, a library-first Builder node for audited `ReactiveValue` specs, initial restricted-subset static validation with persisted validation results, an editor touch-point review path for local candidate analysis and writer consent, and the first audited `ReactiveValue` component path. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -119,8 +119,9 @@ Current implementation:
 - `backend/src/nodes/specAgent.ts` runs the Spec Agent through `LLMProvider.structured(...)` only; it selects writer-approved, Critic-surviving `ReactiveValue` candidates, validates provider specs against the audited component registry/prop schema, and persists valid specs to `generated_specs`.
 - `backend/src/services/libraryLookup.ts` resolves library specs through the audited component registry and rejects unsupported modes, unsupported component names, and invalid component props.
 - `backend/src/nodes/builder.ts` implements the current library-first Builder slice by converting valid `ReactiveValue` specs into audited component build units containing component path, props, fallback text, embedded data, and accessibility/reduced-motion notes for downstream validation/export.
+- `backend/src/nodes/staticValidator.ts` validates library build units against the restricted subset and persists pass/fail records to `validation_results`.
 - Candidate generation and critic pruning are testable with the deterministic fake provider and store full candidate payloads in `candidates.payload_json` while using `candidates.block_id` for block-level invalidation.
-- The current editor route uses a deterministic local fake provider for visible smoke testing when running candidate review. Full provider selection, workflow graph persistence, cancellation, data-gap handling, validator integration, QA, and export are not implemented yet.
+- The current editor route uses a deterministic local fake provider for visible smoke testing when running candidate review. Full provider selection, workflow graph persistence, cancellation, data-gap handling, preview/export gating, QA, and export are not implemented yet.
 
 Target flow:
 
@@ -215,7 +216,10 @@ Current implementation:
 
 - `@banderdash/validators` is a TypeScript workspace package for validation infrastructure.
 - It exports shared validation finding/result types and `createValidationResult(...)` for constructing pass/fail results from hard failures and warnings.
-- Restricted-subset checks, backend static validator node wiring, validation persistence, and export gating are not implemented yet.
+- `packages/validators/src/restrictedSubset.ts` implements the current conservative restricted-subset check for component source.
+- The restricted-subset check hard-blocks runtime network APIs, storage APIs, cookie access, dynamic code execution, dynamic imports, raw HTML rendering, host DOM access, remote URLs, unscoped global event listeners, and global timers.
+- `backend/src/nodes/staticValidator.ts` applies the restricted-subset check to library build units and persists validation results.
+- Preview/export gating is not implemented yet.
 
 Target responsibility:
 

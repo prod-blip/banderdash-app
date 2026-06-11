@@ -8,6 +8,7 @@
     "./nodes/builder": "./dist/nodes/builder.js",
     "./nodes/critic": "./dist/nodes/critic.js",
     "./nodes/specAgent": "./dist/nodes/specAgent.js",
+    "./nodes/staticValidator": "./dist/nodes/staticValidator.js",
     "./nodes/schemas/candidate": "./dist/nodes/schemas/candidate.js",
     "./nodes/schemas/componentSpec": "./dist/nodes/schemas/componentSpec.js",
     "./services/articles": "./dist/services/articles.js",
@@ -24,6 +25,7 @@
   "dependencies": {
     "@banderdash/components": "*",
     "@banderdash/doc-model": "*",
-    "@banderdash/providers": "*"
+    "@banderdash/providers": "*",
+    "@banderdash/validators": "*"
   }
 }
