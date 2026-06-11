@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./nodes/analyst": "./dist/nodes/analyst.js",
+    "./nodes/builder": "./dist/nodes/builder.js",
     "./nodes/critic": "./dist/nodes/critic.js",
     "./nodes/specAgent": "./dist/nodes/specAgent.js",
     "./nodes/schemas/candidate": "./dist/nodes/schemas/candidate.js",
@@ -12,6 +13,7 @@
     "./services/articles": "./dist/services/articles.js",
     "./services/candidateConsent": "./dist/services/candidateConsent.js",
     "./services/db": "./dist/services/db.js",
+    "./services/libraryLookup": "./dist/services/libraryLookup.js",
     "./services/migrations": "./dist/services/migrations.js"
   },
   "scripts": {
