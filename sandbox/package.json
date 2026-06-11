@@ -2,5 +2,14 @@
   "name": "@banderdash/sandbox",
   "version": "0.1.0",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "exports": {
+    ".": "./dist/renderer.js"
+  },
+  "types": "./dist/renderer.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run src --root .",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  }
 }
