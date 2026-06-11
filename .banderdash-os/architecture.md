@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, provider-backed Analyst/Critic/Spec Agent nodes, a library-first Builder node for audited `ReactiveValue` specs, initial restricted-subset static validation with persisted validation results, an editor touch-point review path for local candidate analysis and writer consent, and the first audited `ReactiveValue` component path. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, provider-backed Analyst/Critic/Spec Agent nodes, a library-first Builder node for audited `ReactiveValue` specs, initial restricted-subset static validation with persisted validation results, a sandbox preview renderer shell, an editor touch-point review path for local candidate analysis and writer consent, and the first audited `ReactiveValue` component path. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -232,6 +232,12 @@ Bespoke generated components are allowed later in the MVP only under strict vali
 They must not use runtime network calls, storage APIs, dynamic code execution, raw HTML rendering, host DOM access, arbitrary imports, or external resources.
 
 ### Sandbox QA
+
+Current implementation:
+
+- `@banderdash/sandbox` is a TypeScript workspace package for the local sandbox preview renderer shell.
+- `sandbox/src/renderer.ts` validates bounded editor preview messages with `{ component, props, runId }`, escapes placeholder preview markup, and posts ready/rendered/error responses back to the parent window.
+- `apps/editor/src/lib/components/SandboxPreview.svelte` provides a locked-down iframe wrapper using `sandbox="allow-scripts"`, `referrerpolicy="no-referrer"`, and a restrictive CSP in `srcdoc`.
 
 Preview and QA should run locally in a restricted iframe.
 
