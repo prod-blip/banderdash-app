@@ -29,8 +29,9 @@ The project currently has:
 - an audited `ReactiveValue` component path with registry lookup, prop validation, fallback generation, and safe Svelte source;
 - a static validator package with shared validation result/finding types and initial restricted-subset hard-block rules;
 - a locked-down sandbox preview shell with bounded postMessage payload validation and an editor iframe wrapper;
+- a backend Sandbox QA node that persists non-visual QA warnings/crashes and preview/export eligibility policy helpers;
 
-The full persisted workflow graph, Claude/Codex provider adapters, CompareToggle component path, sandbox QA harness, and export pipeline are not implemented yet.
+The full persisted workflow graph, Claude/Codex provider adapters, CompareToggle component path, browser-backed QA execution, and export pipeline are not implemented yet.
 
 ## Current Phase
 
@@ -38,13 +39,13 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Add sandbox QA harness and connect Static Validator/Sandbox output to preview/export eligibility.
-2. Add persisted workflow graph/run status around the Analyst -> Critic -> consent -> Spec Agent -> Builder path.
+1. Add persisted workflow graph/run status around the Analyst -> Critic -> consent -> Spec Agent -> Builder -> Static Validator -> Sandbox QA path.
+2. Add the export package/pipeline and connect validated/QA'd build units to immutable export artifacts.
 3. Add additional provider adapters only if needed for local workflow verification.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, and 11.1 are landed on `main`, leaving 16 plan tasks. Do not treat that as 16 required PRs; the expected remaining reviewable PR count is roughly 16–21 if closely related small tasks are grouped carefully.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, and 11.2 are landed on `main`, leaving 15 plan tasks. Do not treat that as 15 required PRs; the expected remaining reviewable PR count is roughly 15–20 if closely related small tasks are grouped carefully.
 
 ## Important Current Docs
 
@@ -98,6 +99,7 @@ Push back on:
 - Added the static validator package shell: `@banderdash/validators` now defines shared validation finding/result types and a helper for pass/fail result construction.
 - Added initial static validation: restricted-subset checks hard-block runtime network/storage/dynamic code/raw HTML/host DOM/global timer patterns, and the backend Static Validator node persists pass/fail results for library build units.
 - Added the sandbox preview renderer shell: `@banderdash/sandbox` validates bounded preview messages and posts ready/rendered/error responses, while the editor has a locked-down iframe wrapper with a restrictive CSP srcdoc.
+- Added the Sandbox QA node: backend non-visual QA now persists pass/warning/crashed results for build units, captures mount/runtime errors, warns on fallback/a11y/reduced-motion issues, and exposes preview/export eligibility policy helpers that hard-block static validation failures while requiring explicit confirmation for QA warnings/crashes.
 
 ## Update Rule
 

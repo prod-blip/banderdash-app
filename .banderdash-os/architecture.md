@@ -219,7 +219,8 @@ Current implementation:
 - `packages/validators/src/restrictedSubset.ts` implements the current conservative restricted-subset check for component source.
 - The restricted-subset check hard-blocks runtime network APIs, storage APIs, cookie access, dynamic code execution, dynamic imports, raw HTML rendering, host DOM access, remote URLs, unscoped global event listeners, and global timers.
 - `backend/src/nodes/staticValidator.ts` applies the restricted-subset check to library build units and persists validation results.
-- Preview/export gating is not implemented yet.
+- `backend/src/services/qaResults.ts` exposes preview/export eligibility helpers: static validation failures hard-block preview/export, while QA warnings/crashes require explicit confirmation before export.
+- Preview/export UI gating is not implemented yet.
 
 Target responsibility:
 
@@ -238,6 +239,7 @@ Current implementation:
 - `@banderdash/sandbox` is a TypeScript workspace package for the local sandbox preview renderer shell.
 - `sandbox/src/renderer.ts` validates bounded editor preview messages with `{ component, props, runId }`, escapes placeholder preview markup, and posts ready/rendered/error responses back to the parent window.
 - `apps/editor/src/lib/components/SandboxPreview.svelte` provides a locked-down iframe wrapper using `sandbox="allow-scripts"`, `referrerpolicy="no-referrer"`, and a restrictive CSP in `srcdoc`.
+- `backend/src/nodes/sandboxQA.ts` runs the current backend QA harness over build units, persists pass/warning/crashed `qa_results`, captures injected mount/runtime errors, and warns on missing fallback text, unlabeled controls, keyboard reachability issues, and reduced-motion gaps.
 
 Preview and QA should run locally in a restricted iframe.
 

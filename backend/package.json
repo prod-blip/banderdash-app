@@ -9,13 +9,15 @@
     "./nodes/critic": "./dist/nodes/critic.js",
     "./nodes/specAgent": "./dist/nodes/specAgent.js",
     "./nodes/staticValidator": "./dist/nodes/staticValidator.js",
+    "./nodes/sandboxQA": "./dist/nodes/sandboxQA.js",
     "./nodes/schemas/candidate": "./dist/nodes/schemas/candidate.js",
     "./nodes/schemas/componentSpec": "./dist/nodes/schemas/componentSpec.js",
     "./services/articles": "./dist/services/articles.js",
     "./services/candidateConsent": "./dist/services/candidateConsent.js",
     "./services/db": "./dist/services/db.js",
     "./services/libraryLookup": "./dist/services/libraryLookup.js",
-    "./services/migrations": "./dist/services/migrations.js"
+    "./services/migrations": "./dist/services/migrations.js",
+    "./services/qaResults": "./dist/services/qaResults.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
