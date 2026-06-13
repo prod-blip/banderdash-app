@@ -10,6 +10,8 @@
     "./nodes/specAgent": "./dist/nodes/specAgent.js",
     "./nodes/staticValidator": "./dist/nodes/staticValidator.js",
     "./nodes/sandboxQA": "./dist/nodes/sandboxQA.js",
+    "./graph/runner": "./dist/graph/runner.js",
+    "./graph/types": "./dist/graph/types.js",
     "./nodes/schemas/candidate": "./dist/nodes/schemas/candidate.js",
     "./nodes/schemas/componentSpec": "./dist/nodes/schemas/componentSpec.js",
     "./services/articles": "./dist/services/articles.js",
@@ -17,7 +19,8 @@
     "./services/db": "./dist/services/db.js",
     "./services/libraryLookup": "./dist/services/libraryLookup.js",
     "./services/migrations": "./dist/services/migrations.js",
-    "./services/qaResults": "./dist/services/qaResults.js"
+    "./services/qaResults": "./dist/services/qaResults.js",
+    "./services/workflowRuns": "./dist/services/workflowRuns.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

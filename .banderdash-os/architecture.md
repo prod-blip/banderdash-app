@@ -120,8 +120,11 @@ Current implementation:
 - `backend/src/services/libraryLookup.ts` resolves library specs through the audited component registry and rejects unsupported modes, unsupported component names, and invalid component props.
 - `backend/src/nodes/builder.ts` implements the current library-first Builder slice by converting valid `ReactiveValue` specs into audited component build units containing component path, props, fallback text, embedded data, and accessibility/reduced-motion notes for downstream validation/export.
 - `backend/src/nodes/staticValidator.ts` validates library build units against the restricted subset and persists pass/fail records to `validation_results`.
+- `backend/src/graph/types.ts` defines the ordered MVP workflow stages and run statuses.
+- `backend/src/services/workflowRuns.ts` persists workflow run state and append-only workflow events in SQLite.
+- `backend/src/graph/runner.ts` provides the first resumable graph runner: it records stage start/completion/wait/failure events, resumes after completed stages, and can pause at user-input boundaries.
 - Candidate generation and critic pruning are testable with the deterministic fake provider and store full candidate payloads in `candidates.payload_json` while using `candidates.block_id` for block-level invalidation.
-- The current editor route uses a deterministic local fake provider for visible smoke testing when running candidate review. Full provider selection, workflow graph persistence, cancellation, data-gap handling, preview/export gating, QA, and export are not implemented yet.
+- The current editor route uses a deterministic local fake provider for visible smoke testing when running candidate review. Full provider selection, cancellation, structured debug logging, data-gap handling, preview/export UI gating, browser-backed QA, and export are not implemented yet.
 
 Target flow:
 
@@ -190,6 +193,7 @@ Current implementation:
 - `migrations/001_init.sql` creates the initial MVP state tables for articles, document versions/blocks, workflow runs/events, candidates, approvals, generated specs, validation/QA results, exports, and LLM logs.
 - `migrations/002_invalidation_columns.sql` adds invalidation timestamp/reason columns to generated-state tables that can become stale after article edits.
 - `backend/src/services/articles.ts` provides create/update/get services for versioned ArticleDocs. It uses `@banderdash/doc-model` to parse and validate the 5,000-word limit, persists version snapshots in `article_versions`, materializes blocks in `article_blocks`, and rejects updates when the caller's expected document version is stale.
+- `backend/src/services/workflowRuns.ts` stores current workflow status/current stage/completed stages in `workflow_runs.payload_json` and appends meaningful stage/run events to `workflow_events`.
 - The current SQLite implementation uses Node's built-in `node:sqlite` API because `better-sqlite3` hit native install/platform issues in the repo path.
 
 It stores document versions, workflow state, approvals, generated specs, validation results, QA results, and export records.
