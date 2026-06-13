@@ -123,8 +123,9 @@ Current implementation:
 - `backend/src/graph/types.ts` defines the ordered MVP workflow stages and run statuses.
 - `backend/src/services/workflowRuns.ts` persists workflow run state and append-only workflow events in SQLite.
 - `backend/src/graph/runner.ts` provides the first resumable graph runner: it records stage start/completion/wait/failure events, resumes after completed stages, and can pause at user-input boundaries.
+- `backend/src/services/cancellation.ts` persists workflow cancellation requests, marks pending runs canceled immediately, and lets the runner stop between stages while retaining completed-stage outputs and marking the incomplete stage.
 - Candidate generation and critic pruning are testable with the deterministic fake provider and store full candidate payloads in `candidates.payload_json` while using `candidates.block_id` for block-level invalidation.
-- The current editor route uses a deterministic local fake provider for visible smoke testing when running candidate review. Full provider selection, cancellation, structured debug logging, data-gap handling, preview/export UI gating, browser-backed QA, and export are not implemented yet.
+- The current editor route uses a deterministic local fake provider for visible smoke testing when running candidate review. Full provider selection, structured debug logging, data-gap handling, preview/export UI gating, browser-backed QA, and export are not implemented yet.
 
 Target flow:
 

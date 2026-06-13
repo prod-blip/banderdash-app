@@ -1,4 +1,5 @@
 import { WORKFLOW_STAGES, type WorkflowStage, type WorkflowStageHandlers, type WorkflowStageResult } from "./types.js";
+import { isWorkflowCancellationRequested, markWorkflowCanceled } from "../services/cancellation.js";
 import type { WorkflowRunStore } from "../services/workflowRuns.js";
 
 export interface WorkflowRunnerOptions {
@@ -45,6 +46,10 @@ async function executeWorkflowRun(options: WorkflowRunnerOptions, runId: string)
 
   const startIndex = nextStageIndex(stages, run.completedStages);
   for (const stage of stages.slice(startIndex)) {
+    if (isWorkflowCancellationRequested(run)) {
+      return markWorkflowCanceled(options.store, run, { incompleteStage: stage });
+    }
+
     const handler = options.handlers[stage] ?? defaultStageHandler;
     run = options.store.updateRun(run.id, { currentStage: stage, status: "running" });
     options.store.appendEvent(run.id, { eventType: "stage_started", stage });
@@ -57,6 +62,12 @@ async function executeWorkflowRun(options: WorkflowRunnerOptions, runId: string)
         stage,
         payload: run.payload
       });
+
+      const cancellationCheck = options.store.getRun(run.id);
+      if (cancellationCheck && isWorkflowCancellationRequested(cancellationCheck)) {
+        return markWorkflowCanceled(options.store, cancellationCheck, { incompleteStage: stage });
+      }
+
       const nextPayload = { ...run.payload, ...(result.payload ?? {}) };
 
       if (result.status === "waiting_for_user") {
