@@ -16,6 +16,7 @@
     "./nodes/schemas/componentSpec": "./dist/nodes/schemas/componentSpec.js",
     "./services/articles": "./dist/services/articles.js",
     "./services/candidateConsent": "./dist/services/candidateConsent.js",
+    "./services/cancellation": "./dist/services/cancellation.js",
     "./services/db": "./dist/services/db.js",
     "./services/libraryLookup": "./dist/services/libraryLookup.js",
     "./services/migrations": "./dist/services/migrations.js",

@@ -44,7 +44,9 @@ export type WorkflowEventType =
   | "stage_waiting_for_user"
   | "stage_failed"
   | "run_completed"
-  | "run_failed";
+  | "run_failed"
+  | "run_cancel_requested"
+  | "run_canceled";
 
 export interface WorkflowStageContext {
   runId: string;
