@@ -61,11 +61,11 @@ describe("library Builder node", () => {
   it("fails unsupported components instead of drifting into bespoke generation", () => {
     const unsupportedSpec: ComponentSpec = {
       ...validSpec,
-      componentName: "CompareToggle"
+      componentName: "UnsupportedComponent"
     };
 
     expect(() => runLibraryBuilderNode({ specs: [unsupportedSpec] })).toThrow(BuilderValidationError);
-    expect(() => runLibraryBuilderNode({ specs: [unsupportedSpec] })).toThrow("unsupported component CompareToggle");
+    expect(() => runLibraryBuilderNode({ specs: [unsupportedSpec] })).toThrow("unsupported component UnsupportedComponent");
   });
 
   it("returns no build units when there are no generated specs", () => {

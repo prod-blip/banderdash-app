@@ -26,7 +26,7 @@ The project currently has:
 - an editor touch-point review path that can run local candidate analysis, show Critic-surviving candidates, record writer approval/rejection, and export approved local artifacts;
 - a component spec schema and provider-backed Spec Agent that convert approved `ReactiveValue` candidates into persisted audited component specs;
 - a library-first Builder that converts valid `ReactiveValue` specs into audited component build units;
-- an audited `ReactiveValue` component path with registry lookup, prop validation, fallback generation, and safe Svelte source;
+- audited `ReactiveValue` and `CompareToggle` component paths with registry lookup, prop validation, fallback generation, and safe Svelte source;
 - a static validator package with shared validation result/finding types and initial restricted-subset hard-block rules;
 - an export bundler package foundation with typed `ExportManifest` metadata, runtime validation, unique custom-element tag generation, immutable artifact writing for JS/manifest/preview files, backend export records, and export artifact cleanup;
 - a locked-down sandbox preview shell with bounded postMessage payload validation and an editor iframe wrapper;
@@ -34,7 +34,7 @@ The project currently has:
 - persisted workflow graph primitives with SQLite-backed run/event storage and a resumable graph runner for ordered workflow stages;
 - workflow cancellation support that persists cancel requests, stops pending/running runs, keeps completed stage outputs, and marks the incomplete stage;
 
-Claude/Codex provider adapters, CompareToggle component path, debug/history UI, and browser-backed QA execution are not implemented yet.
+Claude/Codex provider adapters, CompareToggle workflow wiring, debug/history UI, and browser-backed QA execution are not implemented yet.
 
 ## Current Phase
 
@@ -42,13 +42,13 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Add the next audited interaction pattern (`CompareToggle`) after the first export UI path.
-2. Wire `CompareToggle` through Analyst -> Spec Agent -> Builder -> export.
+1. Wire `CompareToggle` through Analyst -> Spec Agent -> Builder -> export.
+2. Add debug/history API and UI.
 3. Add additional provider adapters only if needed for local workflow verification.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, and the first local export-control slice of 13.3 are landed on `main`, leaving roughly 7–8 plan tasks depending on how remaining workflow/debug slices are grouped. Do not treat that as the exact required PR count; the expected remaining reviewable PR count is roughly 7–11 if closely related small tasks are grouped carefully.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, the first local export-control slice of 13.3, and 14.1 are landed on `main`, leaving roughly 6–7 plan tasks depending on how remaining workflow/debug slices are grouped. Do not treat that as the exact required PR count; the expected remaining reviewable PR count is roughly 6–10 if closely related small tasks are grouped carefully.
 
 ## Important Current Docs
 
@@ -95,6 +95,7 @@ Push back on:
 - Added the first real provider adapter: `openai-compatible` supports environment-configured API keys/base URL, `/models` preflight, chat completions, structured JSON-schema calls, and streaming response parsing.
 - Added workflow candidate generation: the Analyst node uses structured provider output only, validates article/version/block/span references, and persists proposed interaction candidates for later critic/consent stages.
 - Added audited `ReactiveValue` component path: `@banderdash/components` now has registry lookup, schema validation, fallback generation, and a safe Svelte source component for bounded numeric interactions.
+- Added audited `CompareToggle` component path: `@banderdash/components` now has a registered `compare_toggle` pattern with A/B prop validation, fallback generation, keyboard-reachable controls, and safe Svelte source.
 - Added the Critic node: backend workflow can now use structured provider output to mark proposed candidates as `survived` or `rejected_by_critic` using the enact-meaning-not-decoration rule.
 - Added editor candidate review: saved drafts can run local Analyst/Critic review, display `ReactiveValue` candidates in Touch-point review, and record writer consent with expected-version safety.
 - Added the Spec Agent path: backend now validates component specs, uses structured provider output to generate `ReactiveValue` specs for approved candidates, validates audited props, and persists specs in SQLite.

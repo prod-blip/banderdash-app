@@ -27,7 +27,7 @@ export function resolveLibraryComponentSpec(spec: ComponentSpec): LibraryCompone
     throw new LibraryComponentLookupError(`Spec ${spec.id} has invalid props for ${spec.componentName}.`);
   }
 
-  const fallbackText = component.createFallbackText(spec.props);
+  const fallbackText = (component.createFallbackText as unknown as (props: Record<string, unknown>) => string)(spec.props);
   if (fallbackText.trim().length === 0) {
     throw new LibraryComponentLookupError(`Spec ${spec.id} produced empty fallback text.`);
   }
