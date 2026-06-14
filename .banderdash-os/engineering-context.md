@@ -28,13 +28,13 @@ The project currently has:
 - a library-first Builder that converts valid `ReactiveValue` specs into audited component build units;
 - an audited `ReactiveValue` component path with registry lookup, prop validation, fallback generation, and safe Svelte source;
 - a static validator package with shared validation result/finding types and initial restricted-subset hard-block rules;
-- an export bundler package foundation with typed `ExportManifest` metadata, runtime validation, and unique custom-element tag generation;
+- an export bundler package foundation with typed `ExportManifest` metadata, runtime validation, unique custom-element tag generation, and immutable artifact writing for JS/manifest/preview files;
 - a locked-down sandbox preview shell with bounded postMessage payload validation and an editor iframe wrapper;
 - a backend Sandbox QA node that persists non-visual QA warnings/crashes and preview/export eligibility policy helpers;
 - persisted workflow graph primitives with SQLite-backed run/event storage and a resumable graph runner for ordered workflow stages;
 - workflow cancellation support that persists cancel requests, stops pending/running runs, keeps completed stage outputs, and marks the incomplete stage;
 
-Immutable export artifact creation, export cleanup, Claude/Codex provider adapters, CompareToggle component path, and browser-backed QA execution are not implemented yet.
+Backend export node/services, export cleanup, Claude/Codex provider adapters, CompareToggle component path, and browser-backed QA execution are not implemented yet.
 
 ## Current Phase
 
@@ -42,12 +42,13 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Build immutable export artifacts and connect validated/QA'd build units to export records.
-2. Add additional provider adapters only if needed for local workflow verification.
+1. Connect validated/QA'd build units to backend export records.
+2. Add export cleanup for old completed exports and temp artifacts.
+3. Add additional provider adapters only if needed for local workflow verification.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, and 12.2 are landed on `main`, leaving 10 plan tasks. Do not treat that as 10 required PRs; the expected remaining reviewable PR count is roughly 10–15 if closely related small tasks are grouped carefully.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, and the package-level part of 12.3 are landed on `main`, leaving roughly 9–10 plan tasks depending on how backend export wiring is sliced. Do not treat that as the exact required PR count; the expected remaining reviewable PR count is roughly 9–14 if closely related small tasks are grouped carefully.
 
 ## Important Current Docs
 
@@ -102,6 +103,7 @@ Push back on:
 - Added initial static validation: restricted-subset checks hard-block runtime network/storage/dynamic code/raw HTML/host DOM/global timer patterns, and the backend Static Validator node persists pass/fail results for library build units.
 - Added the export bundler package foundation: `@banderdash/bundler` now exports the MVP `ExportManifest` types and runtime validation for required files/interactions/custom-element metadata.
 - Added unique export tag generation: `@banderdash/bundler` can create stable collision-resistant `ia-article-*` custom-element tags from export IDs and validate custom-element tag syntax.
+- Added immutable export artifact writing in `@banderdash/bundler`: package-level export builds now create per-export directories with JS, manifest JSON, and preview HTML files plus SHA-256/byte metadata, without source maps or overwrite-in-place behavior.
 - Added the sandbox preview renderer shell: `@banderdash/sandbox` validates bounded preview messages and posts ready/rendered/error responses, while the editor has a locked-down iframe wrapper with a restrictive CSP srcdoc.
 - Added the Sandbox QA node: backend non-visual QA now persists pass/warning/crashed results for build units, captures mount/runtime errors, warns on fallback/a11y/reduced-motion issues, and exposes preview/export eligibility policy helpers that hard-block static validation failures while requiring explicit confirmation for QA warnings/crashes.
 - Added persisted workflow graph primitives: backend now has typed workflow stages/statuses, a SQLite-backed workflow run/event store, and a resumable runner that records stage transitions, waits for user input, resumes from completed stages, and persists failures.
