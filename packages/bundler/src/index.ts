@@ -1,3 +1,4 @@
+export { generateExportTagName, isValidCustomElementTagName, type GenerateExportTagNameOptions } from "./tagName.js";
 export {
   EXPORT_MANIFEST_SCHEMA_VERSION,
   isExportManifest,
