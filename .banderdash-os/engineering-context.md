@@ -23,7 +23,7 @@ The project currently has:
 - backend article persistence services for creating, updating, versioning, invalidating changed-block generated state, and loading latest ArticleDocs;
 - a provider abstraction package with deterministic fake provider, OpenAI-compatible adapter, and preflight checks;
 - a provider-backed Analyst node and a provider-backed Critic node that validate, persist, and prune proposed interaction candidates;
-- an editor touch-point review path that can run local candidate analysis, show Critic-surviving candidates, and record writer approval/rejection;
+- an editor touch-point review path that can run local candidate analysis, show Critic-surviving candidates, record writer approval/rejection, and export approved local artifacts;
 - a component spec schema and provider-backed Spec Agent that convert approved `ReactiveValue` candidates into persisted audited component specs;
 - a library-first Builder that converts valid `ReactiveValue` specs into audited component build units;
 - an audited `ReactiveValue` component path with registry lookup, prop validation, fallback generation, and safe Svelte source;
@@ -34,7 +34,7 @@ The project currently has:
 - persisted workflow graph primitives with SQLite-backed run/event storage and a resumable graph runner for ordered workflow stages;
 - workflow cancellation support that persists cancel requests, stops pending/running runs, keeps completed stage outputs, and marks the incomplete stage;
 
-Claude/Codex provider adapters, CompareToggle component path, and browser-backed QA execution are not implemented yet.
+Claude/Codex provider adapters, CompareToggle component path, debug/history UI, and browser-backed QA execution are not implemented yet.
 
 ## Current Phase
 
@@ -42,13 +42,13 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Wire export controls into the editor workflow.
-2. Add the next audited interaction pattern (`CompareToggle`) after export UI is usable.
+1. Add the next audited interaction pattern (`CompareToggle`) after the first export UI path.
+2. Wire `CompareToggle` through Analyst -> Spec Agent -> Builder -> export.
 3. Add additional provider adapters only if needed for local workflow verification.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, and 12.4 are landed on `main`, leaving 8 plan tasks. Do not treat that as the exact required PR count; the expected remaining reviewable PR count is roughly 8–12 if closely related small tasks are grouped carefully.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, and the first local export-control slice of 13.3 are landed on `main`, leaving roughly 7–8 plan tasks depending on how remaining workflow/debug slices are grouped. Do not treat that as the exact required PR count; the expected remaining reviewable PR count is roughly 7–11 if closely related small tasks are grouped carefully.
 
 ## Important Current Docs
 
@@ -106,6 +106,7 @@ Push back on:
 - Added immutable export artifact writing in `@banderdash/bundler`: package-level export builds now create per-export directories with JS, manifest JSON, and preview HTML files plus SHA-256/byte metadata, without source maps or overwrite-in-place behavior.
 - Added backend export records: backend export service/node checks static validation and QA eligibility, rejects stale-version build units/results, creates immutable bundler artifacts, and persists export metadata in SQLite.
 - Added export cleanup: bundler cleanup helpers delete export/temp artifact paths, and backend cleanup keeps the latest completed exports per article while preserving SQLite export history.
+- Added editor export controls: the local editor can export approved `ReactiveValue` candidates through a local export API, show the export file list/preview path, and keep export disabled until at least one candidate is approved.
 - Added the sandbox preview renderer shell: `@banderdash/sandbox` validates bounded preview messages and posts ready/rendered/error responses, while the editor has a locked-down iframe wrapper with a restrictive CSP srcdoc.
 - Added the Sandbox QA node: backend non-visual QA now persists pass/warning/crashed results for build units, captures mount/runtime errors, warns on fallback/a11y/reduced-motion issues, and exposes preview/export eligibility policy helpers that hard-block static validation failures while requiring explicit confirmation for QA warnings/crashes.
 - Added persisted workflow graph primitives: backend now has typed workflow stages/statuses, a SQLite-backed workflow run/event store, and a resumable runner that records stage transitions, waits for user input, resumes from completed stages, and persists failures.

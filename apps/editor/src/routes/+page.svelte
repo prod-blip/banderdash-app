@@ -5,6 +5,8 @@
     hasUnsavedArticleChanges,
     persistArticle
   } from "$lib/article-editor";
+  import ExportPanel from "$lib/components/ExportPanel.svelte";
+  import { canExportArticle, createInitialExportPanelState, exportArticle } from "$lib/export-panel";
   import {
     canRunCandidateReview,
     createInitialWorkflowReviewState,
@@ -30,20 +32,18 @@
       status: "Pending workflow logs",
       description: "Workflow status, timings, errors, QA warnings, and export history will be visible here."
     },
-    {
-      title: "Export",
-      status: "Pending bundler",
-      description: "Immutable web-component exports will be generated from approved interactions only."
-    }
   ];
 
   let editorState = createInitialArticleEditorState();
   let workflowReviewState = createInitialWorkflowReviewState();
+  let exportPanelState = createInitialExportPanelState();
 
   $: wordCount = getArticleWordCount(editorState);
   $: hasUnsavedChanges = hasUnsavedArticleChanges(editorState);
   $: canSave = editorState.status !== "saving" && editorState.rawText.trim().length > 0 && hasUnsavedChanges;
   $: canAnalyze = canRunCandidateReview(editorState.savedArticle, workflowReviewState.status) && !hasUnsavedChanges;
+  $: approvedCandidateCount = Object.values(workflowReviewState.consentByCandidateId).filter((decision) => decision === "approved").length;
+  $: canExport = canExportArticle(editorState.savedArticle, approvedCandidateCount, exportPanelState.status) && !hasUnsavedChanges;
 
   async function saveArticleDraft() {
     editorState = {
@@ -53,6 +53,7 @@
     };
     editorState = await persistArticle(fetch, editorState);
     workflowReviewState = createInitialWorkflowReviewState();
+    exportPanelState = createInitialExportPanelState();
   }
 
   async function analyzeArticle() {
@@ -66,6 +67,20 @@
 
   async function consentToCandidate(candidateId: string, decision: ConsentDecision) {
     workflowReviewState = await recordCandidateConsent(fetch, editorState.savedArticle, workflowReviewState, candidateId, decision);
+    exportPanelState = createInitialExportPanelState();
+  }
+
+  async function exportApprovedArticle() {
+    exportPanelState = {
+      ...exportPanelState,
+      status: "exporting",
+      message: "Building immutable local export artifacts..."
+    };
+    exportPanelState = await exportArticle(fetch, editorState.savedArticle, approvedCandidateCount, exportPanelState);
+  }
+
+  function setQaOverrideConfirmed(confirmed: boolean) {
+    exportPanelState = { ...exportPanelState, qaOverrideConfirmed: confirmed };
   }
 </script>
 
@@ -186,6 +201,14 @@
         </ol>
       {/if}
     </article>
+
+    <ExportPanel
+      approvedCandidateCount={approvedCandidateCount}
+      canExport={canExport}
+      state={exportPanelState}
+      onExport={exportApprovedArticle}
+      onQaOverrideChange={setQaOverrideConfirmed}
+    />
 
     {#each productSections as section}
       <article class="panel">

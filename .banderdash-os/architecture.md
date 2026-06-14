@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, provider-backed Analyst/Critic/Spec Agent nodes, a library-first Builder node for audited `ReactiveValue` specs, initial restricted-subset static validation with persisted validation results, an export bundler package foundation with typed manifest validation, unique tag generation, immutable artifact writing, backend export records, and export cleanup, a sandbox preview renderer shell, structured workflow debug logging, an editor touch-point review path for local candidate analysis and writer consent, and the first audited `ReactiveValue` component path. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, provider-backed Analyst/Critic/Spec Agent nodes, a library-first Builder node for audited `ReactiveValue` specs, initial restricted-subset static validation with persisted validation results, an export bundler package foundation with typed manifest validation, unique tag generation, immutable artifact writing, backend export records, and export cleanup, a sandbox preview renderer shell, structured workflow debug logging, an editor touch-point review/export path for local candidate analysis, writer consent, and local artifact export, and the first audited `ReactiveValue` component path. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -86,14 +86,16 @@ Current implementation:
 - `apps/editor/vite.config.ts` binds dev and preview servers to `127.0.0.1` with strict ports.
 - The editor home page now has a saved article draft panel that posts pasted prose to `POST /api/articles`, updates via `PUT /api/articles/:id`, displays the saved article id/version, and renders the persisted block breakdown.
 - The touch-point review panel can run local candidate analysis for a saved article, display Critic-surviving `ReactiveValue` candidates with rationale/source block/understanding-loss text, and record writer approval or rejection.
-- Preview, debug/history, and export panels are still placeholders.
+- The export panel can create a local immutable export after at least one current-version candidate is approved, then display the preview path, custom element tag, and generated file list.
+- Preview and debug/history panels are still placeholders.
 - `POST /api/articles` creates and persists an ArticleDoc from raw text.
 - `GET /api/articles/:id` loads the latest persisted ArticleDoc.
 - `PUT /api/articles/:id` updates an article using expected-version conflict checks.
 - `POST /api/articles/:id/candidate-review` runs the current local Analyst -> Critic path for a saved article version and returns surviving candidates.
 - `POST /api/articles/:id/approvals` records writer approval/rejection for Critic-surviving candidates with expected-version stale-action protection.
+- `POST /api/articles/:id/exports` builds and records a local immutable export for approved current-version candidates.
 - The API resolves the local SQLite path from `.banderdash/config.json` and uses the backend article service.
-- Autosave UI, persisted workflow run status, component preview, and export controls are not implemented yet.
+- Autosave UI, persisted workflow run status, component preview, and debug/history UI are not implemented yet.
 
 Target responsibilities:
 
