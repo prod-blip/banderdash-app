@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, provider-backed Analyst/Critic/Spec Agent nodes, a library-first Builder node for audited `ReactiveValue` specs, initial restricted-subset static validation with persisted validation results, an export bundler package foundation with typed manifest validation and unique tag generation, a sandbox preview renderer shell, structured workflow debug logging, an editor touch-point review path for local candidate analysis and writer consent, and the first audited `ReactiveValue` component path. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, provider-backed Analyst/Critic/Spec Agent nodes, a library-first Builder node for audited `ReactiveValue` specs, initial restricted-subset static validation with persisted validation results, an export bundler package foundation with typed manifest validation, unique tag generation, and immutable artifact writing, a sandbox preview renderer shell, structured workflow debug logging, an editor touch-point review path for local candidate analysis and writer consent, and the first audited `ReactiveValue` component path. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -266,7 +266,8 @@ Current implementation:
 - `@banderdash/bundler` is a TypeScript workspace package for export/bundling code.
 - It currently defines and validates the MVP `ExportManifest` shape: export/article/version IDs, schema version, created timestamp, custom-element tag name, file paths/hashes/byte counts, component library version, and interaction metadata.
 - It generates stable collision-resistant `ia-article-*` custom-element tag names from export IDs and exposes custom-element tag validation.
-- Artifact writing, preview HTML generation, backend export node/services, and export cleanup are not implemented yet.
+- It can create immutable package-level export artifact directories containing custom-element JS, `manifest.json`, and `preview.html`, with SHA-256 and byte-size metadata and no source maps.
+- Backend export node/services and export cleanup are not implemented yet.
 
 ## Intended Repository Shape
 

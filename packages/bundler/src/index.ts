@@ -1,3 +1,6 @@
+export { buildExport, type BuildExportInput, type BuildExportResult, type ExportArticleBlock, type ExportArtifactFile, type ExportInteractionInput } from "./buildExport.js";
+export { createExportManifest, type CreateExportManifestInput } from "./manifest.js";
+export { renderPreviewHtml, type RenderPreviewHtmlInput } from "./previewHtml.js";
 export { generateExportTagName, isValidCustomElementTagName, type GenerateExportTagNameOptions } from "./tagName.js";
 export {
   EXPORT_MANIFEST_SCHEMA_VERSION,
