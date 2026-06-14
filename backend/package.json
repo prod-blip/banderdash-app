@@ -7,6 +7,7 @@
     "./nodes/analyst": "./dist/nodes/analyst.js",
     "./nodes/builder": "./dist/nodes/builder.js",
     "./nodes/critic": "./dist/nodes/critic.js",
+    "./nodes/exportNode": "./dist/nodes/exportNode.js",
     "./nodes/specAgent": "./dist/nodes/specAgent.js",
     "./nodes/staticValidator": "./dist/nodes/staticValidator.js",
     "./nodes/sandboxQA": "./dist/nodes/sandboxQA.js",
@@ -18,6 +19,7 @@
     "./services/candidateConsent": "./dist/services/candidateConsent.js",
     "./services/cancellation": "./dist/services/cancellation.js",
     "./services/db": "./dist/services/db.js",
+    "./services/exports": "./dist/services/exports.js",
     "./services/libraryLookup": "./dist/services/libraryLookup.js",
     "./services/llmLogs": "./dist/services/llmLogs.js",
     "./services/migrations": "./dist/services/migrations.js",
@@ -31,6 +33,7 @@
   },
   "dependencies": {
     "@banderdash/components": "*",
+    "@banderdash/bundler": "*",
     "@banderdash/doc-model": "*",
     "@banderdash/providers": "*",
     "@banderdash/validators": "*"
