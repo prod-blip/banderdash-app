@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -37,6 +37,9 @@ describe("Export node", () => {
     const db = createMigratedDatabase();
     const articleService = createArticleService({ createId: () => "article_test_1", db });
     const outputDir = createTempDirectory("banderdash-export-node-output-");
+    const temporaryArtifactDir = join(outputDir, "tmp-build");
+    mkdirSync(temporaryArtifactDir);
+    writeFileSync(join(temporaryArtifactDir, "scratch.js"), "temporary", "utf8");
 
     try {
       const article = await articleService.createArticle("# Growth note\n\nRevenue grew from 10 to 20.");
@@ -52,6 +55,7 @@ describe("Export node", () => {
         now: () => new Date("2026-06-14T00:00:00.000Z"),
         outputDir,
         qaRecords: [createQARecord(article.id, article.version, unit.specId, "passed")],
+        temporaryArtifactPaths: [temporaryArtifactDir],
         validationRecords: [createValidationRecord(article.id, article.version, unit.specId, "passed")]
       });
 
@@ -64,6 +68,7 @@ describe("Export node", () => {
       });
       expect(record.payload.artifacts.map((artifact) => artifact.path).sort()).toEqual(["manifest.json", "preview.html", `${record.payload.tagName}.js`].sort());
       expect(readFileSync(join(record.payload.exportDir, "manifest.json"), "utf8")).toContain('"exportId": "export_1"');
+      expect(existsSync(temporaryArtifactDir)).toBe(false);
       expect(getExportRecord(db, "export_1")).toEqual(record);
     } finally {
       db.close();

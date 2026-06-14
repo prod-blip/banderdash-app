@@ -15,6 +15,8 @@ export interface ExportNodeOptions {
   outputDir: string;
   qaOverrideConfirmed?: boolean;
   qaRecords: SandboxQARecord[];
+  retentionLimit?: number;
+  temporaryArtifactPaths?: string[];
   validationRecords: StaticValidationRecord[];
 }
 
