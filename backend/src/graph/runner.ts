@@ -1,9 +1,12 @@
-import { WORKFLOW_STAGES, type WorkflowStage, type WorkflowStageHandlers, type WorkflowStageResult } from "./types.js";
+import { WORKFLOW_STAGES, type WorkflowStage, type WorkflowStageContext, type WorkflowStageHandlers, type WorkflowStageResult } from "./types.js";
 import { isWorkflowCancellationRequested, markWorkflowCanceled } from "../services/cancellation.js";
+import type { LlmLogStore } from "../services/llmLogs.js";
 import type { WorkflowRunStore } from "../services/workflowRuns.js";
 
 export interface WorkflowRunnerOptions {
+  debugLogStore?: LlmLogStore;
   handlers: WorkflowStageHandlers;
+  now?: () => Date;
   store: WorkflowRunStore;
   stages?: readonly WorkflowStage[];
 }
@@ -54,13 +57,23 @@ async function executeWorkflowRun(options: WorkflowRunnerOptions, runId: string)
     run = options.store.updateRun(run.id, { currentStage: stage, status: "running" });
     options.store.appendEvent(run.id, { eventType: "stage_started", stage });
 
+    const stageContext: WorkflowStageContext = {
+      runId: run.id,
+      articleId: run.articleId,
+      documentVersion: run.documentVersion,
+      stage,
+      payload: run.payload
+    };
+    const stageStartedAt = currentTimeMs(options);
+
     try {
-      const result = await handler({
-        runId: run.id,
-        articleId: run.articleId,
-        documentVersion: run.documentVersion,
-        stage,
-        payload: run.payload
+      const result = await handler(stageContext);
+      recordStageLog(options, stageContext, {
+        durationMs: currentTimeMs(options) - stageStartedAt,
+        structuredOutput: {
+          payload: result.payload ?? {},
+          status: result.status
+        }
       });
 
       const cancellationCheck = options.store.getRun(run.id);
@@ -84,6 +97,10 @@ async function executeWorkflowRun(options: WorkflowRunnerOptions, runId: string)
       });
       options.store.appendEvent(run.id, { eventType: "stage_completed", payload: result.payload, stage });
     } catch (error) {
+      recordStageLog(options, stageContext, {
+        durationMs: currentTimeMs(options) - stageStartedAt,
+        error: { message: errorMessage(error), name: errorName(error) }
+      });
       run = options.store.updateRun(run.id, {
         currentStage: stage,
         payload: { ...run.payload, error: errorMessage(error) },
@@ -112,6 +129,31 @@ function nextStageIndex(stages: readonly WorkflowStage[], completedStages: Workf
 
 function defaultStageHandler(): WorkflowStageResult {
   return { status: "completed" as const };
+}
+
+function recordStageLog(
+  options: WorkflowRunnerOptions,
+  context: WorkflowStageContext,
+  result: { durationMs: number; error?: Record<string, unknown>; structuredOutput?: Record<string, unknown> }
+): void {
+  options.debugLogStore?.recordLog({
+    articleId: context.articleId,
+    documentVersion: context.documentVersion,
+    durationMs: result.durationMs,
+    error: result.error,
+    nodeName: context.stage,
+    structuredInput: { payload: context.payload, stage: context.stage },
+    structuredOutput: result.structuredOutput,
+    workflowRunId: context.runId
+  });
+}
+
+function currentTimeMs(options: Pick<WorkflowRunnerOptions, "now">): number {
+  return options.now ? options.now().getTime() : Date.now();
+}
+
+function errorName(error: unknown): string {
+  return error instanceof Error ? error.name : "Error";
 }
 
 function errorMessage(error: unknown): string {

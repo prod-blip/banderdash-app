@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { connectDatabase, type BanderdashDatabase } from "../services/db.js";
+import { createLlmLogStore } from "../services/llmLogs.js";
 import { runMigrations } from "../services/migrations.js";
 import { createWorkflowRunStore } from "../services/workflowRuns.js";
 import { resumeWorkflowRun, startWorkflowRun } from "./runner.js";
@@ -184,6 +185,55 @@ describe("workflow graph runner", () => {
       db.close();
     }
   });
+
+  it("records structured debug logs for completed and failed stage execution", async () => {
+    const db = createMigratedDatabase();
+    const ids = createDeterministicIds();
+    const store = createWorkflowRunStore({ db, createId: ids.next, now: createClock() });
+    const debugLogStore = createLlmLogStore({ db, createId: ids.nextLog, now: createClock() });
+
+    try {
+      insertArticleFixture(db, "article_1", 1);
+      const run = await startWorkflowRun(
+        {
+          debugLogStore,
+          handlers: {
+            Analyst: () => ({ status: "completed", payload: { candidatesPersisted: 2 } }),
+            Critic: () => {
+              throw new Error("critic failed");
+            }
+          },
+          now: createDurationClock(),
+          stages: ["Analyst", "Critic"],
+          store
+        },
+        { articleId: "article_1", documentVersion: 1, payload: { startedBy: "test" } }
+      );
+
+      expect(run.status).toBe("failed");
+      expect(debugLogStore.listForRun(run.id)).toEqual([
+        expect.objectContaining({
+          articleId: "article_1",
+          documentVersion: 1,
+          durationMs: 5,
+          id: "llm_log_1",
+          nodeName: "Analyst",
+          structuredInput: { payload: { startedBy: "test" }, stage: "Analyst" },
+          structuredOutput: { payload: { candidatesPersisted: 2 }, status: "completed" }
+        }),
+        expect.objectContaining({
+          durationMs: 5,
+          error: { message: "critic failed", name: "Error" },
+          id: "llm_log_2",
+          nodeName: "Critic",
+          structuredInput: { payload: { candidatesPersisted: 2, startedBy: "test" }, stage: "Critic" },
+          structuredOutput: undefined
+        })
+      ]);
+    } finally {
+      db.close();
+    }
+  });
 });
 
 function insertArticleFixture(db: BanderdashDatabase, articleId: string, version: number): void {
@@ -193,6 +243,7 @@ function insertArticleFixture(db: BanderdashDatabase, articleId: string, version
 function createDeterministicIds() {
   let runCounter = 0;
   let eventCounter = 0;
+  let logCounter = 0;
 
   return {
     next(prefix: "workflow_run" | "workflow_event") {
@@ -203,6 +254,10 @@ function createDeterministicIds() {
 
       eventCounter += 1;
       return `workflow_event_${eventCounter}`;
+    },
+    nextLog() {
+      logCounter += 1;
+      return `llm_log_${logCounter}`;
     }
   };
 }
@@ -212,5 +267,14 @@ function createClock() {
   return () => {
     tick += 1;
     return new Date(`2026-06-13T00:00:${String(tick).padStart(2, "0")}.000Z`);
+  };
+}
+
+function createDurationClock() {
+  let timeMs = 0;
+  return () => {
+    const current = new Date(timeMs);
+    timeMs += 5;
+    return current;
   };
 }
