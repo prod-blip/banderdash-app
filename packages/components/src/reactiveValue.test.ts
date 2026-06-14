@@ -24,7 +24,7 @@ const validProps: ReactiveValueProps = {
 
 describe("ReactiveValue audited component path", () => {
   it("registers ReactiveValue by pattern and name", () => {
-    expect(componentRegistry).toHaveLength(1);
+    expect(componentRegistry).toEqual(expect.arrayContaining([expect.objectContaining({ name: "ReactiveValue" })]));
     expect(getComponentByPattern("ReactiveValue")).toMatchObject({
       name: "ReactiveValue",
       componentPath: "packages/components/src/ReactiveValue.svelte"

@@ -1,4 +1,10 @@
 import {
+  compareTogglePropSchema,
+  createCompareToggleFallbackText,
+  isCompareToggleProps,
+  type CompareToggleProps
+} from "./compareToggle.schema.js";
+import {
   createReactiveValueFallbackText,
   isReactiveValueProps,
   reactiveValuePropSchema,
@@ -15,7 +21,16 @@ export const reactiveValueRegistryEntry: ComponentRegistryEntry<ReactiveValuePro
   createFallbackText: createReactiveValueFallbackText
 };
 
-export const componentRegistry = [reactiveValueRegistryEntry] as const;
+export const compareToggleRegistryEntry: ComponentRegistryEntry<CompareToggleProps> = {
+  name: "CompareToggle",
+  pattern: "compare_toggle",
+  componentPath: "packages/components/src/CompareToggle.svelte",
+  propSchema: compareTogglePropSchema,
+  validateProps: isCompareToggleProps,
+  createFallbackText: createCompareToggleFallbackText
+};
+
+export const componentRegistry = [reactiveValueRegistryEntry, compareToggleRegistryEntry] as const;
 export type RegisteredComponent = (typeof componentRegistry)[number];
 
 export function getComponentByPattern(pattern: string): RegisteredComponent | null {
