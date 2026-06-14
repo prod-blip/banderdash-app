@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, provider-backed Analyst/Critic/Spec Agent nodes, a library-first Builder node for audited `ReactiveValue` specs, initial restricted-subset static validation with persisted validation results, an export bundler package foundation with typed manifest validation, unique tag generation, immutable artifact writing, and backend export records, a sandbox preview renderer shell, structured workflow debug logging, an editor touch-point review path for local candidate analysis and writer consent, and the first audited `ReactiveValue` component path. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, provider-backed Analyst/Critic/Spec Agent nodes, a library-first Builder node for audited `ReactiveValue` specs, initial restricted-subset static validation with persisted validation results, an export bundler package foundation with typed manifest validation, unique tag generation, immutable artifact writing, backend export records, and export cleanup, a sandbox preview renderer shell, structured workflow debug logging, an editor touch-point review path for local candidate analysis and writer consent, and the first audited `ReactiveValue` component path. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -125,7 +125,7 @@ Current implementation:
 - `backend/src/graph/runner.ts` provides the first resumable graph runner: it records stage start/completion/wait/failure events, resumes after completed stages, and can pause at user-input boundaries.
 - `backend/src/services/cancellation.ts` persists workflow cancellation requests, marks pending runs canceled immediately, and lets the runner stop between stages while retaining completed-stage outputs and marking the incomplete stage.
 - `backend/src/services/llmLogs.ts` records structured per-stage debug logs in `llm_logs`, including structured input/output, timing, errors, and optional token/cost metadata while rejecting raw provider request/response dumps.
-- `backend/src/services/exports.ts` and `backend/src/nodes/exportNode.ts` enforce export eligibility against static validation/QA records, reject stale-version build units/results, call the bundler to create immutable artifacts, and persist export records.
+- `backend/src/services/exports.ts` and `backend/src/nodes/exportNode.ts` enforce export eligibility against static validation/QA records, reject stale-version build units/results, call the bundler to create immutable artifacts, persist export records, remove temporary artifact paths, and prune older export artifact directories per article while preserving SQLite history.
 - The graph runner can write those logs when given a debug log store, so future workflow API/debug-history work can surface node execution details without changing node contracts.
 - Candidate generation and critic pruning are testable with the deterministic fake provider and store full candidate payloads in `candidates.payload_json` while using `candidates.block_id` for block-level invalidation.
 - The current editor route uses a deterministic local fake provider for visible smoke testing when running candidate review. Full provider selection, data-gap handling, preview/export UI gating, browser-backed QA, and export are not implemented yet.
@@ -199,7 +199,7 @@ Current implementation:
 - `backend/src/services/articles.ts` provides create/update/get services for versioned ArticleDocs. It uses `@banderdash/doc-model` to parse and validate the 5,000-word limit, persists version snapshots in `article_versions`, materializes blocks in `article_blocks`, and rejects updates when the caller's expected document version is stale.
 - `backend/src/services/workflowRuns.ts` stores current workflow status/current stage/completed stages in `workflow_runs.payload_json` and appends meaningful stage/run events in SQLite.
 - `backend/src/services/llmLogs.ts` stores structured workflow debug records in `llm_logs`, keyed to workflow run/article/version when available.
-- `backend/src/services/exports.ts` persists successful export manifests and artifact metadata to `exports`.
+- `backend/src/services/exports.ts` persists successful export manifests and artifact metadata to `exports`; artifact cleanup deletes older directories but intentionally keeps structured export rows as history.
 - The current SQLite implementation uses Node's built-in `node:sqlite` API because `better-sqlite3` hit native install/platform issues in the repo path.
 
 It stores document versions, workflow state, approvals, generated specs, validation results, QA results, and export records.
@@ -270,7 +270,7 @@ Current implementation:
 - It generates stable collision-resistant `ia-article-*` custom-element tag names from export IDs and exposes custom-element tag validation.
 - It can create immutable package-level export artifact directories containing custom-element JS, `manifest.json`, and `preview.html`, with SHA-256 and byte-size metadata and no source maps.
 - Backend export service/node now checks current-version build units/results plus static validation and QA eligibility before creating artifacts and recording exports in SQLite.
-- Export cleanup is not implemented yet.
+- Bundler cleanup helpers remove export directories and temporary artifact paths; backend cleanup keeps the latest completed exports per article and removes older artifact directories while keeping SQLite export history.
 
 ## Intended Repository Shape
 

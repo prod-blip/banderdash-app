@@ -1,4 +1,4 @@
-import { buildExport, type BuildExportResult } from "@banderdash/bundler";
+import { buildExport, cleanupExportArtifacts, cleanupTemporaryArtifacts, type BuildExportResult, type CleanupArtifactsResult } from "@banderdash/bundler";
 import type { ArticleDoc } from "@banderdash/doc-model";
 import type { LibraryBuildUnit } from "../nodes/builder.js";
 import type { StaticValidationRecord } from "../nodes/staticValidator.js";
@@ -15,7 +15,20 @@ export interface CreateExportRecordOptions {
   outputDir: string;
   qaOverrideConfirmed?: boolean;
   qaRecords: SandboxQARecord[];
+  retentionLimit?: number;
+  temporaryArtifactPaths?: string[];
   validationRecords: StaticValidationRecord[];
+}
+
+export interface CleanupOldExportArtifactsOptions {
+  articleId: string;
+  db: BanderdashDatabase;
+  keepLatest?: number;
+}
+
+export interface CleanupOldExportArtifactsResult {
+  artifactCleanup: CleanupArtifactsResult;
+  deletedExportIds: string[];
 }
 
 export interface ExportRecord {
@@ -86,6 +99,12 @@ export async function createExportRecord(options: CreateExportRecordOptions): Pr
   };
 
   persistExportRecord(options.db, record);
+  await cleanupTemporaryArtifacts({ paths: options.temporaryArtifactPaths ?? [] });
+  await cleanupOldExportArtifacts({
+    articleId: options.article.id,
+    db: options.db,
+    keepLatest: options.retentionLimit ?? 10
+  });
   return record;
 }
 
@@ -95,6 +114,29 @@ export function getExportRecord(db: BanderdashDatabase, exportId: string): Expor
     .get(exportId) as ExportRow | undefined;
 
   return row ? rowToExportRecord(row) : null;
+}
+
+export async function cleanupOldExportArtifacts(options: CleanupOldExportArtifactsOptions): Promise<CleanupOldExportArtifactsResult> {
+  const keepLatest = options.keepLatest ?? 10;
+  if (!Number.isInteger(keepLatest) || keepLatest < 1) {
+    throw new Error("keepLatest must be a positive integer");
+  }
+
+  const rows = options.db
+    .prepare(
+      `select id, article_id, document_version, manifest_json, payload_json, created_at
+        from exports
+        where article_id = ?
+        order by created_at desc, id desc`
+    )
+    .all(options.articleId) as unknown as ExportRow[];
+  const staleRows = rows.slice(keepLatest);
+  const artifactCleanup = await cleanupExportArtifacts({ exportDirs: staleRows.map((row) => rowToExportRecord(row).payload.exportDir) });
+
+  return {
+    artifactCleanup,
+    deletedExportIds: staleRows.map((row) => row.id)
+  };
 }
 
 function validateCurrentVersionInputs(options: CreateExportRecordOptions): void {
