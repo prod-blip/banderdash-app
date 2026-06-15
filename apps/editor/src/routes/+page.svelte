@@ -9,6 +9,7 @@
   import ExportPanel from "$lib/components/ExportPanel.svelte";
   import { canLoadDebugHistory, createInitialDebugHistoryState, loadDebugHistory } from "$lib/debug-history";
   import { canExportArticle, createInitialExportPanelState, exportArticle } from "$lib/export-panel";
+  import { cancelWorkflowRun } from "$lib/workflow-cancellation";
   import {
     canRunCandidateReview,
     createInitialWorkflowReviewState,
@@ -89,6 +90,29 @@
       message: "Loading local debug history..."
     };
     debugHistoryState = await loadDebugHistory(fetch, editorState.savedArticle);
+  }
+
+  async function cancelDebugWorkflowRun(runId: string) {
+    debugHistoryState = {
+      ...debugHistoryState,
+      status: "loading",
+      message: `Canceling workflow run ${runId}...`
+    };
+    const cancelResult = await cancelWorkflowRun(fetch, runId);
+    if (!cancelResult.ok) {
+      debugHistoryState = {
+        ...debugHistoryState,
+        status: "error",
+        message: cancelResult.message
+      };
+      return;
+    }
+
+    const refreshedState = await loadDebugHistory(fetch, editorState.savedArticle);
+    debugHistoryState = {
+      ...refreshedState,
+      message: `${cancelResult.message} ${refreshedState.message}`
+    };
   }
 
   function setQaOverrideConfirmed(confirmed: boolean) {
@@ -222,7 +246,7 @@
       onQaOverrideChange={setQaOverrideConfirmed}
     />
 
-    <DebugHistory canLoad={canLoadDebug} state={debugHistoryState} onLoad={refreshDebugHistory} />
+    <DebugHistory canLoad={canLoadDebug} state={debugHistoryState} onLoad={refreshDebugHistory} onCancel={cancelDebugWorkflowRun} />
 
     {#each productSections as section}
       <article class="panel">
