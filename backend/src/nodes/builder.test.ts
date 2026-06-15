@@ -48,6 +48,41 @@ describe("library Builder node", () => {
     ]);
   });
 
+  it("converts a valid CompareToggle spec into an audited library build unit", () => {
+    const compareSpec: ComponentSpec = {
+      ...validSpec,
+      componentName: "CompareToggle",
+      fallbackText: "Local-first exports preserve reader control; hosted embeds optimize distribution.",
+      props: {
+        description: "Compare two publishing paths.",
+        fallbackText: "Local-first exports preserve reader control; hosted embeds optimize distribution.",
+        label: "Compare publishing paths",
+        optionA: {
+          body: "Local-first exports preserve reader control.",
+          heading: "Local-first exports",
+          id: "a",
+          label: "Local-first"
+        },
+        optionB: {
+          body: "Hosted embeds optimize distribution.",
+          heading: "Hosted embeds",
+          id: "b",
+          label: "Hosted"
+        }
+      }
+    };
+
+    const units = runLibraryBuilderNode({ specs: [compareSpec] });
+
+    expect(units).toMatchObject([
+      {
+        componentName: "CompareToggle",
+        componentPath: "packages/components/src/CompareToggle.svelte",
+        fallbackText: "Local-first exports preserve reader control; hosted embeds optimize distribution."
+      }
+    ]);
+  });
+
   it("fails invalid audited component props before building", () => {
     const invalidSpec: ComponentSpec = {
       ...validSpec,

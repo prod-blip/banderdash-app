@@ -63,7 +63,7 @@ export function buildAnalystMessages(article: ArticleDoc): Array<{ role: "system
         "You are Banderdash Analyst.",
         "Propose only interactions that enact meaning, not decoration.",
         "Every candidate must reference existing block IDs and explain what understanding would be lost if removed.",
-        "Use only approved MVP patterns: ReactiveValue or CompareToggle."
+        "Use only approved MVP patterns: ReactiveValue for numeric relationships or compare_toggle for comparison language such as X versus Y."
       ].join(" ")
     },
     {

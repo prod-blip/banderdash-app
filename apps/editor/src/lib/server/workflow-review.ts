@@ -64,8 +64,26 @@ export async function recordCandidateConsent(options: {
 }
 
 function createLocalAnalystCandidate(article: ArticleDoc): InteractionCandidate | null {
-  const block = article.blocks.find(hasNumericText) ?? article.blocks[0];
-  if (!block || !hasNumericText(block)) {
+  const comparisonBlock = article.blocks.find(hasComparisonText);
+  if (comparisonBlock) {
+    return {
+      id: `candidate_${randomUUID()}`,
+      articleId: article.id,
+      documentVersion: article.version,
+      blockIds: [comparisonBlock.id],
+      spanIds: [],
+      pattern: "compare_toggle",
+      rationale: "This block compares two alternatives that readers can understand by toggling between them.",
+      requiredData: ["two compared options from source block"],
+      libraryRepresentable: true,
+      understandingLossIfRemoved:
+        "Readers lose the ability to focus on each side of the comparison and see how the alternatives differ in context.",
+      status: "proposed"
+    };
+  }
+
+  const numericBlock = article.blocks.find(hasNumericText) ?? article.blocks[0];
+  if (!numericBlock || !hasNumericText(numericBlock)) {
     return null;
   }
 
@@ -73,7 +91,7 @@ function createLocalAnalystCandidate(article: ArticleDoc): InteractionCandidate 
     id: `candidate_${randomUUID()}`,
     articleId: article.id,
     documentVersion: article.version,
-    blockIds: [block.id],
+    blockIds: [numericBlock.id],
     spanIds: [],
     pattern: "ReactiveValue",
     rationale: "This block contains a numeric relationship that readers can test by adjusting a value.",
@@ -83,6 +101,10 @@ function createLocalAnalystCandidate(article: ArticleDoc): InteractionCandidate 
       "Readers lose the ability to explore how the numeric relationship changes the article claim instead of only reading the fixed value.",
     status: "proposed"
   };
+}
+
+function hasComparisonText(block: Block): boolean {
+  return /\b(versus|vs\.?|compared with|compared to|rather than)\b/iu.test(block.text);
 }
 
 function hasNumericText(block: Block): boolean {

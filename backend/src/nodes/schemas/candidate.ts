@@ -1,4 +1,4 @@
-export const INTERACTION_PATTERNS = ["ReactiveValue", "CompareToggle"] as const;
+export const INTERACTION_PATTERNS = ["ReactiveValue", "compare_toggle"] as const;
 export type InteractionPattern = (typeof INTERACTION_PATTERNS)[number];
 
 export const INTERACTION_CANDIDATE_STATUSES = ["proposed", "rejected_by_critic", "survived"] as const;

@@ -74,7 +74,8 @@ export function buildSpecAgentMessages(
       content: [
         "You are Banderdash Spec Agent.",
         "Convert writer-approved interaction candidates into concrete audited library component specs.",
-        "Use only componentName ReactiveValue for the current MVP path.",
+        "Use componentName ReactiveValue for ReactiveValue candidates and componentName CompareToggle for compare_toggle candidates.",
+        "CompareToggle props must include label, optional description, optionA with id a, optionB with id b, and fallbackText.",
         "Every spec must include validated props, embedded source data, fallback text, accessibility notes, and reduced-motion requirements.",
         "Do not invent candidate IDs, article IDs, document versions, block IDs, or unsupported component names."
       ].join(" ")
@@ -137,8 +138,9 @@ function validateSpecsForApprovedCandidates(
     if (spec.documentVersion !== article.version || spec.documentVersion !== candidate.documentVersion) {
       throw new SpecAgentValidationError(`Spec ${spec.id} does not match document version ${article.version}.`);
     }
-    if (candidate.pattern !== "ReactiveValue" || spec.componentName !== "ReactiveValue") {
-      throw new SpecAgentValidationError(`Spec ${spec.id} must use the audited ReactiveValue component path.`);
+    const expectedComponentName = componentNameForPattern(candidate.pattern);
+    if (!expectedComponentName || spec.componentName !== expectedComponentName) {
+      throw new SpecAgentValidationError(`Spec ${spec.id} must use ${expectedComponentName ?? "a supported audited component"} for ${candidate.pattern}.`);
     }
     if (!validateLibraryComponentSpec(spec)) {
       throw new SpecAgentValidationError(`Spec ${spec.id} has invalid props for ${spec.componentName}.`);
@@ -146,6 +148,17 @@ function validateSpecsForApprovedCandidates(
   }
 
   return specs;
+}
+
+function componentNameForPattern(pattern: InteractionCandidate["pattern"]): string | null {
+  switch (pattern) {
+    case "ReactiveValue":
+      return "ReactiveValue";
+    case "compare_toggle":
+      return "CompareToggle";
+    default:
+      return null;
+  }
 }
 
 function persistGeneratedSpecs(db: BanderdashDatabase, specs: ComponentSpec[], now: Date): void {
