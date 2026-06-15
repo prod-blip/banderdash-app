@@ -23,6 +23,7 @@ The project currently has:
 - backend article persistence services for creating, updating, versioning, invalidating changed-block generated state, and loading latest ArticleDocs;
 - a provider abstraction package with deterministic fake provider, OpenAI-compatible adapter, and preflight checks;
 - a provider-backed Analyst node and a provider-backed Critic node that validate, persist, and prune proposed interaction candidates;
+- critic evaluation fixtures that cover meaningful quantity interactions, decorative animation, useful/shallow comparisons, jargon explanation, and thematic-but-vague suggestions;
 - an editor touch-point review path that can run local candidate analysis, show Critic-surviving candidates, record writer approval/rejection, and export approved local artifacts;
 - a component spec schema and provider-backed Spec Agent that convert approved `ReactiveValue` and `compare_toggle` candidates into persisted audited component specs;
 - a library-first Builder that converts valid `ReactiveValue` and `CompareToggle` specs into audited component build units;
@@ -44,11 +45,11 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 ## Current Engineering Priority
 
 1. Add additional provider adapters only if needed for local workflow verification.
-2. Add evaluation fixtures plus happy-path/manual QA docs for the tightened MVP path.
+2. Tune Analyst/Critic prompts against the critic fixtures, then add happy-path/manual QA docs for the tightened MVP path.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, the first local export-control slice of 13.3, 14.1, 14.2, 15.1, 15.2, and 15.3 are landed on `main`, leaving roughly 2–4 plan tasks depending on whether additional provider adapters or bespoke generation remain in scope. Do not treat that as the exact required PR count; the expected remaining reviewable PR count is roughly 3–5 for a tightened MVP without bespoke generation.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, the first local export-control slice of 13.3, 14.1, 14.2, 15.1, 15.2, 15.3, and 18.1 are landed on `main`, leaving roughly 2–4 plan tasks depending on whether additional provider adapters or bespoke generation remain in scope. Do not treat that as the exact required PR count; the expected remaining reviewable PR count is roughly 3–5 for a tightened MVP without bespoke generation.
 
 ## Important Current Docs
 
@@ -117,6 +118,7 @@ Push back on:
 - Added the debug/history API foundation: backend can query workflow runs/events, derived stage statuses, LLM logs, QA results, cancellation events, and export records for an article/version, and the editor exposes it under a local debug API route.
 - Added the debug/history editor view: the local editor can load the current article version's debug history and show workflow runs, stage timings/events, structured LLM logs, QA records, and export records in collapsible sections.
 - Added local workflow cancellation UI: the debug/history panel can cancel non-terminal workflow runs through `POST /api/workflows/:runId/cancel`, then reload persisted run history.
+- Added deterministic critic evaluation fixtures for the MVP pruning boundary, covering keep/reject expectations for meaning-bearing interactions versus decorative, shallow, jargon-only, or vague thematic suggestions.
 
 ## Update Rule
 
