@@ -87,7 +87,8 @@ Current implementation:
 - The editor home page now has a saved article draft panel that posts pasted prose to `POST /api/articles`, updates via `PUT /api/articles/:id`, displays the saved article id/version, and renders the persisted block breakdown.
 - The touch-point review panel can run local candidate analysis for a saved article, display Critic-surviving `ReactiveValue` or `compare_toggle` candidates with rationale/source block/understanding-loss text, and record writer approval or rejection.
 - The export panel can create a local immutable export after at least one current-version candidate is approved, then display the preview path, custom element tag, and generated file list.
-- Preview and debug/history panels are still placeholders.
+- The Debug / history panel can load current-version workflow run status, stage timings/events, structured LLM input/output, errors, QA records, and export records in collapsible sections.
+- Preview is still a placeholder.
 - `POST /api/articles` creates and persists an ArticleDoc from raw text.
 - `GET /api/articles/:id` loads the latest persisted ArticleDoc.
 - `PUT /api/articles/:id` updates an article using expected-version conflict checks.
