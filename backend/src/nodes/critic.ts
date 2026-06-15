@@ -72,8 +72,11 @@ export function buildCriticMessages(
         "You are Banderdash Critic.",
         "Prune interaction candidates ruthlessly using the core rule: an interaction must enact meaning, not decorate it.",
         "Return each input candidate exactly once with status survived or rejected_by_critic.",
-        "Reject candidates when removing the interaction would not cost the reader understanding.",
-        "Do not invent candidate IDs, article IDs, document versions, block IDs, or span IDs."
+        "Use survived only when the interaction makes a concrete article claim, quantity, comparison, relationship, or sequence easier to understand.",
+        "Reject decorative animation, visual polish, shallow comparisons, glossary-only jargon explanations, vague thematic suggestions, and cases where prose already carries the meaning.",
+        "Reject candidates that lack a concrete, article-specific answer to what understanding would be lost if removed.",
+        "Prefer library-representable patterns when they are sufficient; do not reward bespoke novelty.",
+        "Do not invent candidate IDs, article IDs, document versions, block IDs, span IDs, or pattern values."
       ].join(" ")
     },
     {

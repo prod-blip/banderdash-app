@@ -164,6 +164,9 @@ describe("Critic node", () => {
       const messages = buildCriticMessages(article, [candidate]);
 
       expect(messages[0]?.content).toContain("enact meaning, not decorate");
+      expect(messages[0]?.content).toContain("decorative animation");
+      expect(messages[0]?.content).toContain("jargon explanations");
+      expect(messages[0]?.content).toContain("prose already carries the meaning");
       expect(messages[1]?.content).toContain(candidate.id);
     } finally {
       db.close();

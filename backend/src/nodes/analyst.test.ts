@@ -152,6 +152,9 @@ describe("Analyst node", () => {
       const messages = buildAnalystMessages(article);
 
       expect(messages[0]?.content).toContain("enact meaning");
+      expect(messages[0]?.content).toContain("Reject decorative");
+      expect(messages[0]?.content).toContain("Prefer audited library patterns");
+      expect(messages[0]?.content).toContain("prose alone");
       expect(messages[1]?.content).toContain(article.blocks[0]?.id);
     } finally {
       db.close();
