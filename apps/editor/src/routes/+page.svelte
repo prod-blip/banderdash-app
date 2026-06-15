@@ -5,7 +5,9 @@
     hasUnsavedArticleChanges,
     persistArticle
   } from "$lib/article-editor";
+  import DebugHistory from "$lib/components/DebugHistory.svelte";
   import ExportPanel from "$lib/components/ExportPanel.svelte";
+  import { canLoadDebugHistory, createInitialDebugHistoryState, loadDebugHistory } from "$lib/debug-history";
   import { canExportArticle, createInitialExportPanelState, exportArticle } from "$lib/export-panel";
   import {
     canRunCandidateReview,
@@ -27,16 +29,12 @@
       status: "Pending components",
       description: "Approved audited interactions will render here before export."
     },
-    {
-      title: "Debug / history",
-      status: "Pending workflow logs",
-      description: "Workflow status, timings, errors, QA warnings, and export history will be visible here."
-    },
   ];
 
   let editorState = createInitialArticleEditorState();
   let workflowReviewState = createInitialWorkflowReviewState();
   let exportPanelState = createInitialExportPanelState();
+  let debugHistoryState = createInitialDebugHistoryState();
 
   $: wordCount = getArticleWordCount(editorState);
   $: hasUnsavedChanges = hasUnsavedArticleChanges(editorState);
@@ -44,6 +42,7 @@
   $: canAnalyze = canRunCandidateReview(editorState.savedArticle, workflowReviewState.status) && !hasUnsavedChanges;
   $: approvedCandidateCount = Object.values(workflowReviewState.consentByCandidateId).filter((decision) => decision === "approved").length;
   $: canExport = canExportArticle(editorState.savedArticle, approvedCandidateCount, exportPanelState.status) && !hasUnsavedChanges;
+  $: canLoadDebug = canLoadDebugHistory(editorState.savedArticle, debugHistoryState.status) && !hasUnsavedChanges;
 
   async function saveArticleDraft() {
     editorState = {
@@ -54,6 +53,7 @@
     editorState = await persistArticle(fetch, editorState);
     workflowReviewState = createInitialWorkflowReviewState();
     exportPanelState = createInitialExportPanelState();
+    debugHistoryState = createInitialDebugHistoryState();
   }
 
   async function analyzeArticle() {
@@ -63,11 +63,13 @@
       message: "Running local Analyst and Critic review..."
     };
     workflowReviewState = await runCandidateReview(fetch, editorState.savedArticle, workflowReviewState);
+    debugHistoryState = createInitialDebugHistoryState();
   }
 
   async function consentToCandidate(candidateId: string, decision: ConsentDecision) {
     workflowReviewState = await recordCandidateConsent(fetch, editorState.savedArticle, workflowReviewState, candidateId, decision);
     exportPanelState = createInitialExportPanelState();
+    debugHistoryState = createInitialDebugHistoryState();
   }
 
   async function exportApprovedArticle() {
@@ -77,6 +79,16 @@
       message: "Building immutable local export artifacts..."
     };
     exportPanelState = await exportArticle(fetch, editorState.savedArticle, approvedCandidateCount, exportPanelState);
+    debugHistoryState = createInitialDebugHistoryState();
+  }
+
+  async function refreshDebugHistory() {
+    debugHistoryState = {
+      ...debugHistoryState,
+      status: "loading",
+      message: "Loading local debug history..."
+    };
+    debugHistoryState = await loadDebugHistory(fetch, editorState.savedArticle);
   }
 
   function setQaOverrideConfirmed(confirmed: boolean) {
@@ -209,6 +221,8 @@
       onExport={exportApprovedArticle}
       onQaOverrideChange={setQaOverrideConfirmed}
     />
+
+    <DebugHistory canLoad={canLoadDebug} state={debugHistoryState} onLoad={refreshDebugHistory} />
 
     {#each productSections as section}
       <article class="panel">
