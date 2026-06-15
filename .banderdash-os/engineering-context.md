@@ -33,8 +33,9 @@ The project currently has:
 - a backend Sandbox QA node that persists non-visual QA warnings/crashes and preview/export eligibility policy helpers;
 - persisted workflow graph primitives with SQLite-backed run/event storage and a resumable graph runner for ordered workflow stages;
 - workflow cancellation support that persists cancel requests, stops pending/running runs, keeps completed stage outputs, and marks the incomplete stage;
+- a debug/history query service and local API endpoint that expose workflow runs/events, stage statuses, structured LLM logs, QA results, cancellation events, and export records for an article/version;
 
-Claude/Codex provider adapters, debug/history UI, and browser-backed QA execution are not implemented yet.
+Claude/Codex provider adapters, debug/history UI, cancellation UI, and browser-backed QA execution are not implemented yet.
 
 ## Current Phase
 
@@ -42,13 +43,13 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Add debug/history API and UI.
+1. Add debug/history UI and cancellation UI.
 2. Add additional provider adapters only if needed for local workflow verification.
 3. Add evaluation fixtures plus happy-path/manual QA docs for the tightened MVP path.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, the first local export-control slice of 13.3, 14.1, and 14.2 are landed on `main`, leaving roughly 5–6 plan tasks depending on how remaining workflow/debug slices are grouped. Do not treat that as the exact required PR count; the expected remaining reviewable PR count is roughly 5–8 if closely related small tasks are grouped carefully.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, the first local export-control slice of 13.3, 14.1, 14.2, and 15.1 are landed on `main`, leaving roughly 4–5 plan tasks depending on how remaining workflow/debug slices are grouped. Do not treat that as the exact required PR count; the expected remaining reviewable PR count is roughly 4–7 if closely related small tasks are grouped carefully.
 
 ## Important Current Docs
 
@@ -114,6 +115,7 @@ Push back on:
 - Added workflow cancellation: backend can persist cancellation requests, cancel pending runs immediately, stop running runs between stages, keep completed stage payloads, and mark the current incomplete stage as canceled/discarded.
 - Added structured workflow debug logging: backend can persist per-stage structured inputs/outputs, timing, errors, and optional token/cost metadata to `llm_logs` without storing raw provider request/response dumps.
 - Wired the CompareToggle flow: Analyst uses the `compare_toggle` pattern, Spec Agent maps it to the audited `CompareToggle` component, Builder/static validation/export accept the resulting build units, and the local editor fake workflow/export path can produce CompareToggle artifacts.
+- Added the debug/history API foundation: backend can query workflow runs/events, derived stage statuses, LLM logs, QA results, cancellation events, and export records for an article/version, and the editor exposes it under a local debug API route.
 
 ## Update Rule
 

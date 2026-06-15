@@ -94,7 +94,8 @@ Current implementation:
 - `POST /api/articles/:id/candidate-review` runs the current local Analyst -> Critic path for a saved article version and returns surviving candidates.
 - `POST /api/articles/:id/approvals` records writer approval/rejection for Critic-surviving candidates with expected-version stale-action protection.
 - `POST /api/articles/:id/exports` builds and records a local immutable export for approved current-version candidates.
-- The API resolves the local SQLite path from `.banderdash/config.json` and uses the backend article service.
+- `GET /api/debug/articles/:id` returns local debug history for the article, with optional `?version=` filtering.
+- The API resolves the local SQLite path from `.banderdash/config.json` and uses backend services.
 - Autosave UI, persisted workflow run status, component preview, and debug/history UI are not implemented yet.
 
 Target responsibilities:
@@ -127,8 +128,9 @@ Current implementation:
 - `backend/src/graph/runner.ts` provides the first resumable graph runner: it records stage start/completion/wait/failure events, resumes after completed stages, and can pause at user-input boundaries.
 - `backend/src/services/cancellation.ts` persists workflow cancellation requests, marks pending runs canceled immediately, and lets the runner stop between stages while retaining completed-stage outputs and marking the incomplete stage.
 - `backend/src/services/llmLogs.ts` records structured per-stage debug logs in `llm_logs`, including structured input/output, timing, errors, and optional token/cost metadata while rejecting raw provider request/response dumps.
+- `backend/src/services/debugHistory.ts` reads article/version debug history from SQLite, including workflow runs/events, derived stage statuses/timings/errors, structured LLM logs, QA records, cancellation events, and export records.
 - `backend/src/services/exports.ts` and `backend/src/nodes/exportNode.ts` enforce export eligibility against static validation/QA records, reject stale-version build units/results, call the bundler to create immutable artifacts, persist export records, remove temporary artifact paths, and prune older export artifact directories per article while preserving SQLite history.
-- The graph runner can write those logs when given a debug log store, so future workflow API/debug-history work can surface node execution details without changing node contracts.
+- The graph runner can write those logs when given a debug log store, and the debug-history API can surface node execution details without changing node contracts.
 - Candidate generation and critic pruning are testable with the deterministic fake provider and store full candidate payloads in `candidates.payload_json` while using `candidates.block_id` for block-level invalidation.
 - The current editor route uses a deterministic local fake provider for visible smoke testing when running candidate review, including comparison-language routing to `compare_toggle`. Full provider selection, data-gap handling, preview/export UI gating, and browser-backed QA are not implemented yet.
 
