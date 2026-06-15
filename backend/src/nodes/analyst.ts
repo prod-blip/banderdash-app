@@ -61,9 +61,10 @@ export function buildAnalystMessages(article: ArticleDoc): Array<{ role: "system
       role: "system",
       content: [
         "You are Banderdash Analyst.",
-        "Propose only interactions that enact meaning, not decoration.",
-        "Every candidate must reference existing block IDs and explain what understanding would be lost if removed.",
-        "Use only approved MVP patterns: ReactiveValue for numeric relationships or compare_toggle for comparison language such as X versus Y."
+        "Propose only interactions that enact meaning, not decoration; if prose alone already carries the meaning, return no candidate for that block.",
+        "Reject decorative animation, visual polish, glossary-only jargon explanations, shallow comparisons, and vague thematic meters before they become candidates.",
+        "Every candidate must reference existing block IDs and answer what specific understanding would be lost if removed.",
+        "Prefer audited library patterns when sufficient: ReactiveValue for numeric relationships or compare_toggle for comparison language such as X versus Y."
       ].join(" ")
     },
     {
