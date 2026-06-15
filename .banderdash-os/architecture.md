@@ -87,7 +87,7 @@ Current implementation:
 - The editor home page now has a saved article draft panel that posts pasted prose to `POST /api/articles`, updates via `PUT /api/articles/:id`, displays the saved article id/version, and renders the persisted block breakdown.
 - The touch-point review panel can run local candidate analysis for a saved article, display Critic-surviving `ReactiveValue` or `compare_toggle` candidates with rationale/source block/understanding-loss text, and record writer approval or rejection.
 - The export panel can create a local immutable export after at least one current-version candidate is approved, then display the preview path, custom element tag, and generated file list.
-- The Debug / history panel can load current-version workflow run status, stage timings/events, structured LLM input/output, errors, QA records, and export records in collapsible sections.
+- The Debug / history panel can load current-version workflow run status, stage timings/events, structured LLM input/output, errors, QA records, and export records in collapsible sections; non-terminal runs can be canceled from this panel.
 - Preview is still a placeholder.
 - `POST /api/articles` creates and persists an ArticleDoc from raw text.
 - `GET /api/articles/:id` loads the latest persisted ArticleDoc.
@@ -96,8 +96,9 @@ Current implementation:
 - `POST /api/articles/:id/approvals` records writer approval/rejection for Critic-surviving candidates with expected-version stale-action protection.
 - `POST /api/articles/:id/exports` builds and records a local immutable export for approved current-version candidates.
 - `GET /api/debug/articles/:id` returns local debug history for the article, with optional `?version=` filtering.
+- `POST /api/workflows/:runId/cancel` records a local cancellation request for pending/running/waiting workflow runs.
 - The API resolves the local SQLite path from `.banderdash/config.json` and uses backend services.
-- Autosave UI, persisted workflow run status, component preview, and debug/history UI are not implemented yet.
+- Autosave UI, persisted workflow run status, and component preview are not implemented yet.
 
 Target responsibilities:
 

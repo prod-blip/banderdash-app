@@ -1,12 +1,18 @@
 <script lang="ts">
-  import type { DebugHistoryState } from "$lib/debug-history";
+  import type { DebugHistoryState, DebugWorkflowRun } from "$lib/debug-history";
+  import { canCancelWorkflowRun } from "$lib/workflow-cancellation";
 
   export let canLoad = false;
   export let state: DebugHistoryState;
   export let onLoad: () => void | Promise<void>;
+  export let onCancel: (runId: string) => void | Promise<void>;
 
   function formatJson(value: unknown): string {
     return JSON.stringify(value, null, 2);
+  }
+
+  function canRequestCancellation(run: DebugWorkflowRun): boolean {
+    return canCancelWorkflowRun(run.status) && !run.events.some((event) => event.eventType === "run_cancel_requested");
   }
 </script>
 
@@ -45,6 +51,11 @@
                 <span>{run.id}</span>
               </div>
               <p>Current stage: {run.currentStage ?? "none"}</p>
+              {#if canRequestCancellation(run)}
+                <button type="button" class="secondary" onclick={() => onCancel(run.id)}>Cancel workflow run</button>
+              {:else if canCancelWorkflowRun(run.status)}
+                <p class="hint">Cancellation requested; the workflow will stop at the next cooperative boundary.</p>
+              {/if}
               {#if run.stageStatuses.length > 0}
                 <ul>
                   {#each run.stageStatuses as stage}
@@ -185,5 +196,12 @@
 
   .error {
     color: #9f1239;
+  }
+
+  .secondary {
+    width: fit-content;
+    border-color: rgba(159, 18, 57, 0.28);
+    color: #9f1239;
+    background: #fff1f2;
   }
 </style>
