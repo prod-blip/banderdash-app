@@ -24,8 +24,8 @@ The project currently has:
 - a provider abstraction package with deterministic fake provider, OpenAI-compatible adapter, and preflight checks;
 - a provider-backed Analyst node and a provider-backed Critic node that validate, persist, and prune proposed interaction candidates;
 - an editor touch-point review path that can run local candidate analysis, show Critic-surviving candidates, record writer approval/rejection, and export approved local artifacts;
-- a component spec schema and provider-backed Spec Agent that convert approved `ReactiveValue` candidates into persisted audited component specs;
-- a library-first Builder that converts valid `ReactiveValue` specs into audited component build units;
+- a component spec schema and provider-backed Spec Agent that convert approved `ReactiveValue` and `compare_toggle` candidates into persisted audited component specs;
+- a library-first Builder that converts valid `ReactiveValue` and `CompareToggle` specs into audited component build units;
 - audited `ReactiveValue` and `CompareToggle` component paths with registry lookup, prop validation, fallback generation, and safe Svelte source;
 - a static validator package with shared validation result/finding types and initial restricted-subset hard-block rules;
 - an export bundler package foundation with typed `ExportManifest` metadata, runtime validation, unique custom-element tag generation, immutable artifact writing for JS/manifest/preview files, backend export records, and export artifact cleanup;
@@ -34,7 +34,7 @@ The project currently has:
 - persisted workflow graph primitives with SQLite-backed run/event storage and a resumable graph runner for ordered workflow stages;
 - workflow cancellation support that persists cancel requests, stops pending/running runs, keeps completed stage outputs, and marks the incomplete stage;
 
-Claude/Codex provider adapters, CompareToggle workflow wiring, debug/history UI, and browser-backed QA execution are not implemented yet.
+Claude/Codex provider adapters, debug/history UI, and browser-backed QA execution are not implemented yet.
 
 ## Current Phase
 
@@ -42,13 +42,13 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Wire `CompareToggle` through Analyst -> Spec Agent -> Builder -> export.
-2. Add debug/history API and UI.
-3. Add additional provider adapters only if needed for local workflow verification.
+1. Add debug/history API and UI.
+2. Add additional provider adapters only if needed for local workflow verification.
+3. Add evaluation fixtures plus happy-path/manual QA docs for the tightened MVP path.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, the first local export-control slice of 13.3, and 14.1 are landed on `main`, leaving roughly 6–7 plan tasks depending on how remaining workflow/debug slices are grouped. Do not treat that as the exact required PR count; the expected remaining reviewable PR count is roughly 6–10 if closely related small tasks are grouped carefully.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, the first local export-control slice of 13.3, 14.1, and 14.2 are landed on `main`, leaving roughly 5–6 plan tasks depending on how remaining workflow/debug slices are grouped. Do not treat that as the exact required PR count; the expected remaining reviewable PR count is roughly 5–8 if closely related small tasks are grouped carefully.
 
 ## Important Current Docs
 
@@ -113,6 +113,7 @@ Push back on:
 - Added persisted workflow graph primitives: backend now has typed workflow stages/statuses, a SQLite-backed workflow run/event store, and a resumable runner that records stage transitions, waits for user input, resumes from completed stages, and persists failures.
 - Added workflow cancellation: backend can persist cancellation requests, cancel pending runs immediately, stop running runs between stages, keep completed stage payloads, and mark the current incomplete stage as canceled/discarded.
 - Added structured workflow debug logging: backend can persist per-stage structured inputs/outputs, timing, errors, and optional token/cost metadata to `llm_logs` without storing raw provider request/response dumps.
+- Wired the CompareToggle flow: Analyst uses the `compare_toggle` pattern, Spec Agent maps it to the audited `CompareToggle` component, Builder/static validation/export accept the resulting build units, and the local editor fake workflow/export path can produce CompareToggle artifacts.
 
 ## Update Rule
 

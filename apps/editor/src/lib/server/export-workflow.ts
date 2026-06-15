@@ -50,11 +50,14 @@ export async function exportLocalArticle(options: LocalExportOptions): Promise<L
   }
 
   const exportId = `export_${randomUUID()}`;
-  const specs = candidates.map((candidate, index) => createReactiveValueSpec(candidate, article.blocks.find((block) => candidate.blockIds.includes(block.id))?.text ?? "", exportId, index));
+  const specs = candidates.map((candidate, index) =>
+    createLocalComponentSpec(candidate, article.blocks.find((block) => candidate.blockIds.includes(block.id))?.text ?? "", exportId, index)
+  );
   persistGeneratedSpecs(specs);
   const buildUnits = runLibraryBuilderNode({ specs });
-  const componentSource = readComponentSource("packages/components/src/ReactiveValue.svelte");
-  const componentSourceByPath = Object.fromEntries(buildUnits.map((unit) => [unit.componentPath, componentSource]));
+  const componentSourceByPath = Object.fromEntries(
+    [...new Set(buildUnits.map((unit) => unit.componentPath))].map((componentPath) => [componentPath, readComponentSource(componentPath)])
+  );
   const validationRecords = runStaticValidatorNode({ buildUnits, componentSourceByPath, db });
   const qaRecords = runSandboxQANode({ buildUnits, componentSourceByPath, db });
   const outputDir = join(findProjectRoot(), ".banderdash", "exports");
@@ -112,6 +115,13 @@ function readApprovedCandidates(articleId: string, documentVersion: number): Int
   return rows.map((row) => JSON.parse(row.payload_json) as InteractionCandidate);
 }
 
+function createLocalComponentSpec(candidate: InteractionCandidate, blockText: string, exportId: string, index: number): ComponentSpec {
+  if (candidate.pattern === "compare_toggle") {
+    return createCompareToggleSpec(candidate, blockText, exportId, index);
+  }
+  return createReactiveValueSpec(candidate, blockText, exportId, index);
+}
+
 function createReactiveValueSpec(candidate: InteractionCandidate, blockText: string, exportId: string, index: number): ComponentSpec {
   const numbers = [...blockText.matchAll(/-?\d+(?:\.\d+)?/gu)].map((match) => Number(match[0])).filter(Number.isFinite);
   const initialValue = numbers[0] ?? 1;
@@ -141,6 +151,66 @@ function createReactiveValueSpec(candidate: InteractionCandidate, blockText: str
     },
     reducedMotionRequirements: "No animation required."
   };
+}
+
+function createCompareToggleSpec(candidate: InteractionCandidate, blockText: string, exportId: string, index: number): ComponentSpec {
+  const { optionA, optionB } = extractCompareOptions(blockText);
+  const fallbackText = `Interactive comparison fallback for approved candidate ${candidate.id}: ${candidate.understandingLossIfRemoved}`;
+
+  return {
+    accessibilityNotes: "Two keyboard-reachable toggle buttons with live comparison output.",
+    articleId: candidate.articleId,
+    candidateId: candidate.id,
+    componentName: "CompareToggle",
+    documentVersion: candidate.documentVersion,
+    embeddedData: { blockIds: candidate.blockIds },
+    fallbackText,
+    id: `spec_${exportId}_${index + 1}`,
+    mode: "library",
+    props: {
+      description: "Toggle between the two article comparison points.",
+      fallbackText,
+      label: "Compare the article alternatives",
+      optionA: {
+        body: optionA.body,
+        heading: optionA.heading,
+        id: "a",
+        label: optionA.label
+      },
+      optionB: {
+        body: optionB.body,
+        heading: optionB.heading,
+        id: "b",
+        label: optionB.label
+      }
+    },
+    reducedMotionRequirements: "No animation required."
+  };
+}
+
+function extractCompareOptions(blockText: string): { optionA: { body: string; heading: string; label: string }; optionB: { body: string; heading: string; label: string } } {
+  const normalized = blockText.trim();
+  const [left, right] = normalized.split(/\b(?:versus|vs\.?|compared with|compared to|rather than)\b/iu, 2).map((part) => part.trim());
+  const optionABody = left || "First side of the comparison from the source article.";
+  const optionBBody = right || "Second side of the comparison from the source article.";
+
+  return {
+    optionA: {
+      body: optionABody,
+      heading: summarizeOptionHeading(optionABody, "Option A"),
+      label: "A"
+    },
+    optionB: {
+      body: optionBBody,
+      heading: summarizeOptionHeading(optionBBody, "Option B"),
+      label: "B"
+    }
+  };
+}
+
+function summarizeOptionHeading(text: string, fallback: string): string {
+  const firstWords = text.replace(/[^\p{L}\p{N}\s-]/gu, " ").trim().split(/\s+/u).filter(Boolean).slice(0, 6).join(" ");
+  return firstWords || fallback;
 }
 
 function readComponentSource(componentPath: string): string {

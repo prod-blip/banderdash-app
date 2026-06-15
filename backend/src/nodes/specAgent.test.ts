@@ -75,6 +75,27 @@ describe("Spec Agent node", () => {
     }
   });
 
+  it("converts approved compare_toggle candidates into persisted CompareToggle specs", async () => {
+    const db = createMigratedDatabase();
+    const articleService = createArticleService({ createId: () => "article_test_1", db });
+
+    try {
+      const article = await articleService.createArticle("Local-first exports versus hosted embeds.");
+      const candidate = createCandidate(article.id, article.version, article.blocks[0]?.id ?? "missing", { pattern: "compare_toggle" });
+      insertCandidateAndApproval(db, candidate);
+      const spec = createCompareToggleSpec(article.id, article.version, candidate.id);
+      const provider = createFakeProvider({ structuredValue: { specs: [spec] } });
+
+      const specs = await runSpecAgentNode({ article, candidates: [candidate], db, model: "fake-model", provider });
+
+      expect(specs).toHaveLength(1);
+      expect(specs[0]).toMatchObject({ candidateId: candidate.id, componentName: "CompareToggle" });
+      expect(db.prepare("select count(*) as count from generated_specs where candidate_id = ?").get(candidate.id)).toMatchObject({ count: 1 });
+    } finally {
+      db.close();
+    }
+  });
+
   it("ignores candidates without writer approval", async () => {
     const db = createMigratedDatabase();
     const articleService = createArticleService({ createId: () => "article_test_1", db });
@@ -148,7 +169,12 @@ describe("Spec Agent node", () => {
   });
 });
 
-function createCandidate(articleId: string, documentVersion: number, blockId: string): InteractionCandidate {
+function createCandidate(
+  articleId: string,
+  documentVersion: number,
+  blockId: string,
+  overrides: Partial<InteractionCandidate> = {}
+): InteractionCandidate {
   return {
     id: "candidate_1",
     articleId,
@@ -160,7 +186,8 @@ function createCandidate(articleId: string, documentVersion: number, blockId: st
     requiredData: [],
     libraryRepresentable: true,
     understandingLossIfRemoved: "Readers lose the ability to test the numeric relationship.",
-    status: "survived"
+    status: "survived",
+    ...overrides
   };
 }
 
@@ -193,6 +220,30 @@ function createSpec(
     reducedMotionRequirements: "No animation required.",
     ...overrides
   };
+}
+
+function createCompareToggleSpec(articleId: string, documentVersion: number, candidateId: string): ComponentSpec {
+  return createSpec(articleId, documentVersion, candidateId, {
+    componentName: "CompareToggle",
+    fallbackText: "Local-first exports preserve reader control; hosted embeds optimize distribution.",
+    props: {
+      description: "Compare two publishing paths.",
+      fallbackText: "Local-first exports preserve reader control; hosted embeds optimize distribution.",
+      label: "Compare publishing paths",
+      optionA: {
+        body: "Local-first exports preserve reader control.",
+        heading: "Local-first exports",
+        id: "a",
+        label: "Local-first"
+      },
+      optionB: {
+        body: "Hosted embeds optimize distribution.",
+        heading: "Hosted embeds",
+        id: "b",
+        label: "Hosted"
+      }
+    }
+  });
 }
 
 function insertCandidateAndApproval(db: BanderdashDatabase, candidate: InteractionCandidate): void {
