@@ -35,6 +35,7 @@ The project currently has:
 - persisted workflow graph primitives with SQLite-backed run/event storage and a resumable graph runner for ordered workflow stages;
 - workflow cancellation support plus a local editor cancel endpoint/UI action that persists cancel requests, stops pending/running runs, keeps completed stage outputs, and marks the incomplete stage;
 - a debug/history query service, local API endpoint, and editor panel that expose workflow runs/events, stage statuses, structured LLM logs, QA results, cancellation events, and export records for an article/version;
+- backend happy-path integration coverage for the audited `ReactiveValue` and `CompareToggle` library flows from persisted article through consent, spec generation, builder, static validation, QA, and export manifest creation;
 
 Claude/Codex provider adapters and browser-backed QA execution are not implemented yet.
 
@@ -44,12 +45,12 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Add additional provider adapters only if needed for local workflow verification.
-2. Add full happy-path integration tests and manual QA docs for the tightened MVP path.
+1. Add manual QA docs for the tightened MVP path.
+2. Add additional provider adapters only if needed for local workflow verification.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, the first local export-control slice of 13.3, 14.1, 14.2, 15.1, 15.2, 15.3, 18.1, and 18.2 are landed on `main`, leaving roughly 2–3 plan tasks depending on whether additional provider adapters or bespoke generation remain in scope. Do not treat that as the exact required PR count; the expected remaining reviewable PR count is roughly 2–4 for a tightened MVP without bespoke generation.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, the first local export-control slice of 13.3, 14.1, 14.2, 15.1, 15.2, 15.3, 18.1, 18.2, and 19.1 are landed on `main`, leaving roughly 1–2 plan tasks depending on whether additional provider adapters or bespoke generation remain in scope. Do not treat that as the exact required PR count; the expected remaining reviewable PR count is roughly 1–3 for a tightened MVP without bespoke generation.
 
 ## Important Current Docs
 
@@ -120,6 +121,7 @@ Push back on:
 - Added local workflow cancellation UI: the debug/history panel can cancel non-terminal workflow runs through `POST /api/workflows/:runId/cancel`, then reload persisted run history.
 - Added deterministic critic evaluation fixtures for the MVP pruning boundary, covering keep/reject expectations for meaning-bearing interactions versus decorative, shallow, jargon-only, or vague thematic suggestions.
 - Hardened Analyst/Critic prompts against the critic fixtures: prompts now explicitly reject decoration, glossary-only jargon, shallow comparisons, vague thematic widgets, and cases where prose already carries the meaning, while preferring audited library patterns.
+- Added full backend integration coverage for the tightened audited library MVP path: `ReactiveValue` and `CompareToggle` flows now persist an article, run workflow stages to writer consent, accept approval, generate specs/build units, pass static validation/QA, and create export manifests.
 
 ## Update Rule
 
