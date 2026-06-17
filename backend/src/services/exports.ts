@@ -80,7 +80,8 @@ export async function createExportRecord(options: CreateExportRecordOptions): Pr
       componentName: unit.componentName,
       fallbackText: unit.fallbackText,
       id: unit.candidateId,
-      mode: unit.mode
+      mode: unit.mode,
+      props: unit.props
     })),
     outputDir: options.outputDir
   });
