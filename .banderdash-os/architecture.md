@@ -2,7 +2,7 @@
 
 Current status: implementation foundation exists.
 
-The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, provider-backed Analyst/Critic/Spec Agent nodes, a library-first Builder node for audited `ReactiveValue` and `CompareToggle` specs, initial restricted-subset static validation with persisted validation results, an export bundler package foundation with typed manifest validation, unique tag generation, immutable artifact writing, backend export records, and export cleanup, a sandbox preview renderer shell, structured workflow debug logging, an editor touch-point review/export path for local candidate analysis, writer consent, and local artifact export, and audited `ReactiveValue` plus `CompareToggle` component paths. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
+The repo now has the initial npm workspace scaffold, an `ia` CLI shell, explicit local setup configuration creation/validation, a real `ia doctor` diagnostics/preflight framework with provider preflight plumbing, a localhost-only SvelteKit editor shell with saved article input and article API routes, the first SQLite state-store foundation with invalidation columns, a shared article document model package with deterministic block parsing/invalidation diffing, a provider abstraction package with an OpenAI-compatible adapter, backend article persistence/version services with stale-version rejection and block-level generated-state invalidation, provider-backed Analyst/Critic/Spec Agent nodes, a library-first Builder node for audited `ReactiveValue` and `CompareToggle` specs, initial restricted-subset static validation with persisted validation results, an export bundler package foundation with typed manifest validation, unique tag generation, immutable artifact writing with file-openable preview HTML, backend export records, and export cleanup, a sandbox preview renderer shell, structured workflow debug logging, an editor touch-point review/export path for local candidate analysis, writer consent, and local artifact export, and audited `ReactiveValue` plus `CompareToggle` component paths. Most architecture below remains target architecture from `interactive-article-platform-implementation.md` and must continue to be updated as implementation lands.
 
 ## Architecture Goal
 
@@ -48,7 +48,7 @@ Component Library
 Export System
   -> immutable web-component JS bundle
   -> manifest
-  -> preview HTML
+  -> file-openable preview HTML
 ```
 
 ## Main Parts

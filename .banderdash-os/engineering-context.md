@@ -29,7 +29,7 @@ The project currently has:
 - a library-first Builder that converts valid `ReactiveValue` and `CompareToggle` specs into audited component build units;
 - audited `ReactiveValue` and `CompareToggle` component paths with registry lookup, prop validation, fallback generation, and safe Svelte source;
 - a static validator package with shared validation result/finding types and initial restricted-subset hard-block rules;
-- an export bundler package foundation with typed `ExportManifest` metadata, runtime validation, unique custom-element tag generation, immutable artifact writing for JS/manifest/preview files, backend export records, and export artifact cleanup;
+- an export bundler package foundation with typed `ExportManifest` metadata, runtime validation, unique custom-element tag generation, immutable artifact writing for JS/manifest/file-openable preview files, backend export records, and export artifact cleanup;
 - a locked-down sandbox preview shell with bounded postMessage payload validation and an editor iframe wrapper;
 - a backend Sandbox QA node that persists non-visual QA warnings/crashes and preview/export eligibility policy helpers;
 - persisted workflow graph primitives with SQLite-backed run/event storage and a resumable graph runner for ordered workflow stages;
@@ -37,7 +37,8 @@ The project currently has:
 - a debug/history query service, local API endpoint, and editor panel that expose workflow runs/events, stage statuses, structured LLM logs, QA results, cancellation events, and export records for an article/version;
 - backend happy-path integration coverage for the audited `ReactiveValue` and `CompareToggle` library flows from persisted article through consent, spec generation, builder, static validation, QA, and export manifest creation;
 - a repeatable manual MVP QA checklist covering install, setup, doctor, localhost editor startup, article save/update, candidate review, approval/rejection, export artifact inspection, debug/history, invalidation, cancellation, QA warning confirmation, and static-validation hard-block expectations;
-- README usage documentation for the tightened local MVP path, including setup/doctor/start, audited pattern support, export artifacts, manual QA, and current limitations.
+- README usage documentation for the tightened local MVP path, including setup/doctor/start, audited pattern support, export artifacts, manual QA, and current limitations;
+- final MVP QA follow-up fixes for the documented CompareToggle article heuristic and direct `file://` preview rendering.
 
 Claude/Codex provider adapters, restricted bespoke generation, and browser-backed QA execution are not implemented yet.
 
@@ -47,12 +48,12 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Run and record final manual MVP QA against the current `main` build.
+1. Re-run final manual MVP QA against the current `main` build after QA follow-up fixes.
 2. Add additional provider adapters only if needed for local workflow verification.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, the first local export-control slice of 13.3, 14.1, 14.2, 15.1, 15.2, 15.3, 18.1, 18.2, 19.1, and 19.2 are landed on `main`, and README MVP usage docs are in place. Remaining work for the tightened MVP is final manual QA/readiness recording unless Atul explicitly brings deferred bespoke generation or additional provider adapters back into scope.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, the first local export-control slice of 13.3, 14.1, 14.2, 15.1, 15.2, 15.3, 18.1, 18.2, 19.1, and 19.2 are landed on `main`, README MVP usage docs are in place, and the final QA follow-up issues from #46/#47 are fixed. Remaining work for the tightened MVP is re-running final manual QA/readiness recording unless Atul explicitly brings deferred bespoke generation or additional provider adapters back into scope.
 
 ## Important Current Docs
 
@@ -126,6 +127,7 @@ Push back on:
 - Added full backend integration coverage for the tightened audited library MVP path: `ReactiveValue` and `CompareToggle` flows now persist an article, run workflow stages to writer consent, accept approval, generate specs/build units, pass static validation/QA, and create export manifests.
 - Added `docs/manual-qa.md` as the repeatable local MVP QA checklist for setup, doctor, editor workflow, export artifact inspection, debug/history, invalidation, cancellation, QA warning confirmation, and static-validation hard-block expectations.
 - Updated `README.md` with tightened local MVP usage, setup/doctor/start flow, audited pattern support, export artifact expectations, manual QA entry point, and current deferred limitations.
+- Fixed the final MVP QA follow-ups: documented `while` comparison phrasing now triggers the local `compare_toggle` path, and exported `preview.html` inlines the custom-element bootstrap while still writing the standalone JS artifact so direct file URL previews render.
 
 ## Update Rule
 

@@ -103,8 +103,8 @@ function createLocalAnalystCandidate(article: ArticleDoc): InteractionCandidate 
   };
 }
 
-function hasComparisonText(block: Block): boolean {
-  return /\b(versus|vs\.?|compared with|compared to|rather than)\b/iu.test(block.text);
+export function hasComparisonText(block: Block): boolean {
+  return /\b(versus|vs\.?|compared with|compared to|rather than|while|whereas)\b/iu.test(block.text);
 }
 
 function hasNumericText(block: Block): boolean {

@@ -190,7 +190,7 @@ function createCompareToggleSpec(candidate: InteractionCandidate, blockText: str
 
 function extractCompareOptions(blockText: string): { optionA: { body: string; heading: string; label: string }; optionB: { body: string; heading: string; label: string } } {
   const normalized = blockText.trim();
-  const [left, right] = normalized.split(/\b(?:versus|vs\.?|compared with|compared to|rather than)\b/iu, 2).map((part) => part.trim());
+  const [left, right] = normalized.split(/\b(?:versus|vs\.?|compared with|compared to|rather than|while|whereas)\b/iu, 2).map((part) => part.trim());
   const optionABody = left || "First side of the comparison from the source article.";
   const optionBBody = right || "Second side of the comparison from the source article.";
 
