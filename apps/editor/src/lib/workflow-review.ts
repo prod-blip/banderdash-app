@@ -22,7 +22,7 @@ export interface CandidateReviewResponse {
 export function createInitialWorkflowReviewState(): WorkflowReviewState {
   return {
     status: "idle",
-    message: "Save an article, then run local analysis to review interaction candidates.",
+    message: "Save your draft, then ask Banderdash to suggest meaningful interaction points.",
     candidates: [],
     consentByCandidateId: {}
   };
@@ -59,8 +59,8 @@ export async function runCandidateReview(
     status: "ready",
     message:
       payload.candidates.length === 0
-        ? "No numeric interaction candidates survived local analysis for this draft."
-        : `Found ${payload.candidates.length} candidate${payload.candidates.length === 1 ? "" : "s"} ready for writer consent.`,
+        ? "No strong interaction candidates were found for this draft."
+        : `Found ${payload.candidates.length} candidate${payload.candidates.length === 1 ? "" : "s"} for review.`,
     candidates: payload.candidates,
     consentByCandidateId: {}
   };
@@ -91,7 +91,7 @@ export async function recordCandidateConsent(
   return {
     ...state,
     status: "ready",
-    message: `Candidate ${decision}.`,
+    message: decision === "approved" ? "Candidate approved." : "Candidate rejected.",
     consentByCandidateId: {
       ...state.consentByCandidateId,
       [candidateId]: decision

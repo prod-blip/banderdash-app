@@ -20,16 +20,14 @@
 
   interface ProductSection {
     title: string;
-    status: string;
     description: string;
   }
 
   const productSections: ProductSection[] = [
     {
       title: "Preview",
-      status: "Pending components",
-      description: "Approved audited interactions will render here before export."
-    },
+      description: "After export, open the generated preview file to test the interactive article locally."
+    }
   ];
 
   let editorState = createInitialArticleEditorState();
@@ -129,14 +127,11 @@
 </svelte:head>
 
 <section class="hero" aria-labelledby="page-title">
-  <p class="eyebrow">Local-first MVP editor</p>
+  <p class="eyebrow">Local-first article editor</p>
   <h1 id="page-title">Banderdash</h1>
   <p class="lede">
-    Turn ordinary articles into meaningful interactive articles through a controlled approval workflow.
+    Paste an article, approve meaningful interactions, and export a static interactive preview you can open locally.
   </p>
-  <div class="notice" role="status">
-    <strong>Current slice:</strong> article input now creates and updates saved local drafts through SQLite-backed API routes.
-  </div>
 </section>
 
 <section class="workspace" aria-label="Editor workspace">
@@ -195,7 +190,7 @@
     <article class="panel touch-panel" aria-labelledby="touch-review-title">
       <div class="panel-header">
         <h2 id="touch-review-title">Touch-point review</h2>
-        <span class:live={workflowReviewState.status === "ready"}>{workflowReviewState.status === "ready" ? "Ready" : "Local analysis"}</span>
+        <span class:live={workflowReviewState.status === "ready"}>{workflowReviewState.status === "ready" ? "Ready" : "Suggestions"}</span>
       </div>
       <p>{workflowReviewState.message}</p>
       <button type="button" onclick={analyzeArticle} disabled={!canAnalyze}>
@@ -252,7 +247,6 @@
       <article class="panel">
         <div class="panel-header">
           <h2>{section.title}</h2>
-          <span>{section.status}</span>
         </div>
         <p>{section.description}</p>
       </article>
@@ -291,16 +285,6 @@
     color: #394456;
     font-size: clamp(1.15rem, 2.2vw, 1.55rem);
     line-height: 1.45;
-  }
-
-  .notice {
-    width: fit-content;
-    max-width: 100%;
-    border: 1px solid rgba(145, 84, 0, 0.22);
-    border-radius: 16px;
-    padding: 0.85rem 1rem;
-    color: #513600;
-    background: #fff4d7;
   }
 
   .workspace {

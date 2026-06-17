@@ -1,15 +1,7 @@
-<script lang="ts">
-  const navigationItems = ["Input", "Review", "Preview", "Debug", "Export"];
-</script>
-
 <div class="app-shell">
   <header class="site-header">
     <a class="brand" href="/" aria-label="Banderdash home">Banderdash</a>
-    <nav aria-label="MVP workflow sections">
-      {#each navigationItems as item}
-        <span>{item}</span>
-      {/each}
-    </nav>
+    <p class="product-tagline">Local interactive article editor</p>
   </header>
 
   <main>
@@ -56,20 +48,11 @@
     text-decoration: none;
   }
 
-  nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 0.5rem;
+  .product-tagline {
+    margin: 0;
     color: #526070;
     font-size: 0.85rem;
-  }
-
-  nav span {
-    border: 1px solid rgba(23, 32, 51, 0.12);
-    border-radius: 999px;
-    padding: 0.25rem 0.65rem;
-    background: #ffffffa3;
+    font-weight: 700;
   }
 
   main {
