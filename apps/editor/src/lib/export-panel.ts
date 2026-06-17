@@ -29,7 +29,7 @@ export interface ExportPanelState {
 export function createInitialExportPanelState(): ExportPanelState {
   return {
     status: "idle",
-    message: "Approve at least one candidate, then export an immutable local artifact.",
+    message: "Approve at least one candidate, then export a local interactive article preview.",
     result: null,
     qaOverrideConfirmed: false
   };

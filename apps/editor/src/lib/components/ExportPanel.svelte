@@ -15,21 +15,24 @@
 <article class="panel export-panel" aria-labelledby="export-panel-title">
   <div class="panel-header">
     <div>
-      <p class="panel-kicker">Immutable artifact</p>
+      <p class="panel-kicker">Download</p>
       <h2 id="export-panel-title">Export</h2>
     </div>
-    <span class:live={state.status === "exported"}>{state.status === "exported" ? "Exported" : "Local only"}</span>
+    <span class:live={state.status === "exported"}>{state.status === "exported" ? "Exported" : "Ready after approval"}</span>
   </div>
 
   <p>{state.message}</p>
   <p class="hint">
-    Approved candidates ready for export: <strong>{approvedCandidateCount}</strong>
+    Approved interactions: <strong>{approvedCandidateCount}</strong>
   </p>
 
-  <label class="checkbox-row">
-    <input checked={state.qaOverrideConfirmed} type="checkbox" onchange={(event) => onQaOverrideChange(event.currentTarget.checked)} />
-    Confirm export if sandbox QA returns warnings or crashes.
-  </label>
+  <details class="advanced-export-options">
+    <summary>Advanced export option</summary>
+    <label class="checkbox-row">
+      <input checked={state.qaOverrideConfirmed} type="checkbox" onchange={(event) => onQaOverrideChange(event.currentTarget.checked)} />
+      Allow export when local QA records warnings. Leave off unless you reviewed the warning.
+    </label>
+  </details>
 
   <button type="button" onclick={onExport} disabled={!canExport}>
     {state.status === "exporting" ? "Exporting..." : "Export article"}
@@ -69,6 +72,22 @@
 
   .checkbox-row input {
     margin-top: 0.2rem;
+  }
+
+  .advanced-export-options {
+    border-top: 1px solid rgba(23, 32, 51, 0.08);
+    padding-top: 0.75rem;
+  }
+
+  .advanced-export-options summary {
+    cursor: pointer;
+    color: #475569;
+    font-size: 0.9rem;
+    font-weight: 800;
+  }
+
+  .advanced-export-options .checkbox-row {
+    margin-top: 0.75rem;
   }
 
   .export-result {

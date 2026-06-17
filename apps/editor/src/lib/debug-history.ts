@@ -83,7 +83,7 @@ export interface DebugExportRecord {
 export function createInitialDebugHistoryState(): DebugHistoryState {
   return {
     status: "idle",
-    message: "Save an article, then load local workflow debug history.",
+    message: "Optional diagnostics for inspecting workflow runs, QA records, and exports.",
     history: null
   };
 }
