@@ -48,12 +48,12 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Re-run final manual MVP QA against the current `main` build after QA follow-up fixes.
+1. Treat the tightened local audited-library MVP as readiness-passed on `main` after the post-#49 QA rerun in `docs/qa-runs/2026-06-17-final-mvp-readiness-rerun.md`.
 2. Add additional provider adapters only if needed for local workflow verification.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, the first local export-control slice of 13.3, 14.1, 14.2, 15.1, 15.2, 15.3, 18.1, 18.2, 19.1, and 19.2 are landed on `main`, README MVP usage docs are in place, and the final QA follow-up issues from #46/#47 are fixed. Remaining work for the tightened MVP is re-running final manual QA/readiness recording unless Atul explicitly brings deferred bespoke generation or additional provider adapters back into scope.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, the first local export-control slice of 13.3, 14.1, 14.2, 15.1, 15.2, 15.3, 18.1, 18.2, 19.1, and 19.2 are landed on `main`, README MVP usage docs are in place, the final QA follow-up issues from #46/#47 are fixed, and the post-fix readiness QA rerun passed. Remaining work is only deferred scope unless Atul explicitly brings bespoke generation, browser-backed visual QA, additional provider adapters, or more component patterns back into scope.
 
 ## Important Current Docs
 
@@ -128,6 +128,7 @@ Push back on:
 - Added `docs/manual-qa.md` as the repeatable local MVP QA checklist for setup, doctor, editor workflow, export artifact inspection, debug/history, invalidation, cancellation, QA warning confirmation, and static-validation hard-block expectations.
 - Updated `README.md` with tightened local MVP usage, setup/doctor/start flow, audited pattern support, export artifact expectations, manual QA entry point, and current deferred limitations.
 - Fixed the final MVP QA follow-ups: documented `while` comparison phrasing now triggers the local `compare_toggle` path, and exported `preview.html` inlines the custom-element bootstrap while still writing the standalone JS artifact so direct file URL previews render.
+- Re-ran final MVP readiness QA after the #49 fixes and recorded a pass in `docs/qa-runs/2026-06-17-final-mvp-readiness-rerun.md`.
 
 ## Update Rule
 
