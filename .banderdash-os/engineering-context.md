@@ -37,8 +37,9 @@ The project currently has:
 - a debug/history query service, local API endpoint, and editor panel that expose workflow runs/events, stage statuses, structured LLM logs, QA results, cancellation events, and export records for an article/version;
 - backend happy-path integration coverage for the audited `ReactiveValue` and `CompareToggle` library flows from persisted article through consent, spec generation, builder, static validation, QA, and export manifest creation;
 - a repeatable manual MVP QA checklist covering install, setup, doctor, localhost editor startup, article save/update, candidate review, approval/rejection, export artifact inspection, debug/history, invalidation, cancellation, QA warning confirmation, and static-validation hard-block expectations;
+- README usage documentation for the tightened local MVP path, including setup/doctor/start, audited pattern support, export artifacts, manual QA, and current limitations.
 
-Claude/Codex provider adapters and browser-backed QA execution are not implemented yet.
+Claude/Codex provider adapters, restricted bespoke generation, and browser-backed QA execution are not implemented yet.
 
 ## Current Phase
 
@@ -46,12 +47,12 @@ Implementation foundation: repository scaffold, CLI shell, setup configuration, 
 
 ## Current Engineering Priority
 
-1. Update README with MVP usage and current local workflow limits.
+1. Run and record final manual MVP QA against the current `main` build.
 2. Add additional provider adapters only if needed for local workflow verification.
 
 ## MVP Plan Progress
 
-`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, the first local export-control slice of 13.3, 14.1, 14.2, 15.1, 15.2, 15.3, 18.1, 18.2, 19.1, and 19.2 are landed on `main`, leaving roughly 1 plan task depending on whether additional provider adapters or bespoke generation remain in scope. Do not treat that as the exact required PR count; the expected remaining reviewable PR count is roughly 1–2 for a tightened MVP without bespoke generation.
+`implementation-plan.md` currently lists 42 implementation tasks. Tasks 0.1, 0.2, 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.2, 6.3, 6.4, 6.5, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.4, the first local export-control slice of 13.3, 14.1, 14.2, 15.1, 15.2, 15.3, 18.1, 18.2, 19.1, and 19.2 are landed on `main`, and README MVP usage docs are in place. Remaining work for the tightened MVP is final manual QA/readiness recording unless Atul explicitly brings deferred bespoke generation or additional provider adapters back into scope.
 
 ## Important Current Docs
 
@@ -124,6 +125,7 @@ Push back on:
 - Hardened Analyst/Critic prompts against the critic fixtures: prompts now explicitly reject decoration, glossary-only jargon, shallow comparisons, vague thematic widgets, and cases where prose already carries the meaning, while preferring audited library patterns.
 - Added full backend integration coverage for the tightened audited library MVP path: `ReactiveValue` and `CompareToggle` flows now persist an article, run workflow stages to writer consent, accept approval, generate specs/build units, pass static validation/QA, and create export manifests.
 - Added `docs/manual-qa.md` as the repeatable local MVP QA checklist for setup, doctor, editor workflow, export artifact inspection, debug/history, invalidation, cancellation, QA warning confirmation, and static-validation hard-block expectations.
+- Updated `README.md` with tightened local MVP usage, setup/doctor/start flow, audited pattern support, export artifact expectations, manual QA entry point, and current deferred limitations.
 
 ## Update Rule
 
