@@ -127,7 +127,7 @@ function createReactiveValueSpec(candidate: InteractionCandidate, blockText: str
   const initialValue = numbers[0] ?? 1;
   const operand = numbers.length > 1 && numbers[0] !== 0 ? Number((numbers[1]! / numbers[0]!).toFixed(2)) : 2;
   const max = Math.max(initialValue * 2, initialValue + 10, 10);
-  const fallbackText = `Interactive fallback for approved candidate ${candidate.id}: ${candidate.understandingLossIfRemoved}`;
+  const fallbackText = candidate.understandingLossIfRemoved;
 
   return {
     accessibilityNotes: "Labelled range input with live result output.",
@@ -155,7 +155,7 @@ function createReactiveValueSpec(candidate: InteractionCandidate, blockText: str
 
 function createCompareToggleSpec(candidate: InteractionCandidate, blockText: string, exportId: string, index: number): ComponentSpec {
   const { optionA, optionB } = extractCompareOptions(blockText);
-  const fallbackText = `Interactive comparison fallback for approved candidate ${candidate.id}: ${candidate.understandingLossIfRemoved}`;
+  const fallbackText = candidate.understandingLossIfRemoved;
 
   return {
     accessibilityNotes: "Two keyboard-reachable toggle buttons with live comparison output.",

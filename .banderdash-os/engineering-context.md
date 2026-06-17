@@ -39,6 +39,7 @@ The project currently has:
 - a repeatable manual MVP QA checklist covering install, setup, doctor, localhost editor startup, article save/update, candidate review, approval/rejection, export artifact inspection, debug/history, invalidation, cancellation, QA warning confirmation, and static-validation hard-block expectations;
 - README usage documentation for the tightened local MVP path, including setup/doctor/start, audited pattern support, export artifacts, manual QA, and current limitations;
 - final MVP QA follow-up fixes for the documented CompareToggle article heuristic and direct `file://` preview rendering.
+- a follow-up export preview fix that removes duplicate title rendering, passes validated library props into exports, and renders self-contained `ReactiveValue` / `CompareToggle` controls instead of candidate-id fallback-only output.
 
 Claude/Codex provider adapters, restricted bespoke generation, and browser-backed QA execution are not implemented yet.
 
@@ -129,6 +130,7 @@ Push back on:
 - Updated `README.md` with tightened local MVP usage, setup/doctor/start flow, audited pattern support, export artifact expectations, manual QA entry point, and current deferred limitations.
 - Fixed the final MVP QA follow-ups: documented `while` comparison phrasing now triggers the local `compare_toggle` path, and exported `preview.html` inlines the custom-element bootstrap while still writing the standalone JS artifact so direct file URL previews render.
 - Re-ran final MVP readiness QA after the #49 fixes and recorded a pass in `docs/qa-runs/2026-06-17-final-mvp-readiness-rerun.md`.
+- Fixed exported preview rendering so article titles are not duplicated and audited interactions render as usable local controls with human-readable fallback text.
 
 ## Update Rule
 

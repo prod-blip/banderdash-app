@@ -19,7 +19,10 @@ describe("buildExport", () => {
 
     const result = await buildExport({
       article: {
-        blocks: [{ id: "block_1", text: "Revenue grew from 10 to 20.", type: "paragraph" }],
+        blocks: [
+          { id: "block_title", text: "Growth note", type: "heading" },
+          { id: "block_1", text: "Revenue grew from 10 to 20.", type: "paragraph" }
+        ],
         id: "article_1",
         title: "Growth note",
         version: 2
@@ -33,7 +36,17 @@ describe("buildExport", () => {
           componentName: "ReactiveValue",
           fallbackText: "Revenue changes from 10 to 20.",
           id: "candidate_1",
-          mode: "library"
+          mode: "library",
+          props: {
+            calculation: { operation: "multiply", operand: 2, precision: 0 },
+            fallbackText: "Revenue changes from 10 to 20.",
+            initialValue: 10,
+            label: "Explore revenue",
+            max: 20,
+            min: 0,
+            resultLabel: "Projected revenue",
+            step: 1
+          }
         }
       ],
       outputDir
@@ -57,11 +70,57 @@ describe("buildExport", () => {
     const previewHtml = await readFile(join(result.exportDir, "preview.html"), "utf8");
 
     expect(js).toContain(`customElements.define("${result.tagName}"`);
+    expect(js).toContain("type=\"range\"");
+    expect(js).toContain("Explore revenue");
+    expect(js).toContain("Projected revenue");
+    expect(js).toContain("block.text.trim() === article.title.trim()");
     expect(js).not.toContain("sourceMappingURL");
     expect(manifestJson).toContain('"exportId": "export_1"');
     expect(previewHtml).toContain(`data-banderdash-source="${result.tagName}.js"`);
     expect(previewHtml).toContain(`customElements.define("${result.tagName}"`);
     expect(previewHtml).toContain(`<${result.tagName}></${result.tagName}>`);
+  });
+
+  it("includes audited CompareToggle controls in the generated export source", async () => {
+    const outputDir = await createTempDirectory();
+
+    const result = await buildExport({
+      article: {
+        blocks: [
+          { id: "block_title", text: "Publishing tradeoffs", type: "heading" },
+          { id: "block_1", text: "Local-first exports preserve control, while hosted embeds optimize reach.", type: "paragraph" }
+        ],
+        id: "article_1",
+        title: "Publishing tradeoffs",
+        version: 1
+      },
+      componentLibraryVersion: "0.1.0",
+      createdAt: new Date("2026-06-14T00:00:00.000Z"),
+      exportId: "export_compare",
+      interactions: [
+        {
+          blockIds: ["block_1"],
+          componentName: "CompareToggle",
+          fallbackText: "Compare the tradeoff.",
+          id: "candidate_compare",
+          mode: "library",
+          props: {
+            fallbackText: "Compare the tradeoff.",
+            label: "Compare publishing paths",
+            optionA: { body: "Preserves writer and reader control.", heading: "Local-first", id: "a", label: "A" },
+            optionB: { body: "Optimizes distribution reach.", heading: "Hosted", id: "b", label: "B" }
+          }
+        }
+      ],
+      outputDir
+    });
+
+    const js = await readFile(join(result.exportDir, `${result.tagName}.js`), "utf8");
+
+    expect(js).toContain("ia-compare-toggle");
+    expect(js).toContain("Compare publishing paths");
+    expect(js).toContain("data-option=\"a\"");
+    expect(js).toContain("aria-pressed");
   });
 
   it("uses a distinct immutable directory per export id and refuses to overwrite an existing export", async () => {
