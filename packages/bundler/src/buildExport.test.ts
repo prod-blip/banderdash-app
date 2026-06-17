@@ -59,7 +59,8 @@ describe("buildExport", () => {
     expect(js).toContain(`customElements.define("${result.tagName}"`);
     expect(js).not.toContain("sourceMappingURL");
     expect(manifestJson).toContain('"exportId": "export_1"');
-    expect(previewHtml).toContain(`<script type="module" src="./${result.tagName}.js"></script>`);
+    expect(previewHtml).toContain(`data-banderdash-source="${result.tagName}.js"`);
+    expect(previewHtml).toContain(`customElements.define("${result.tagName}"`);
     expect(previewHtml).toContain(`<${result.tagName}></${result.tagName}>`);
   });
 

@@ -57,7 +57,7 @@ export async function buildExport(input: BuildExportInput): Promise<BuildExportR
   const jsSource = renderExportJavaScript({ article: input.article, interactions: input.interactions, tagName });
   await writeFile(join(exportDir, jsFileName), jsSource, { encoding: "utf8", flag: "wx" });
 
-  const previewHtml = renderPreviewHtml({ jsFileName, tagName, title: input.article.title });
+  const previewHtml = renderPreviewHtml({ jsFileName, jsSource, tagName, title: input.article.title });
   await writeFile(join(exportDir, previewFileName), previewHtml, { encoding: "utf8", flag: "wx" });
 
   const exportedFiles = [

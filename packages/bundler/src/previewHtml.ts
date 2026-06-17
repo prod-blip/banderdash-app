@@ -1,5 +1,6 @@
 export interface RenderPreviewHtmlInput {
   jsFileName: string;
+  jsSource: string;
   tagName: string;
   title?: string;
 }
@@ -7,6 +8,7 @@ export interface RenderPreviewHtmlInput {
 export function renderPreviewHtml(input: RenderPreviewHtmlInput): string {
   const title = escapeHtml(input.title?.trim() || "Banderdash export preview");
   const jsFileName = escapeHtml(input.jsFileName);
+  const jsSource = escapeScript(input.jsSource);
   const tagName = escapeHtml(input.tagName);
 
   return `<!doctype html>
@@ -17,7 +19,9 @@ export function renderPreviewHtml(input: RenderPreviewHtmlInput): string {
     <title>${title}</title>
   </head>
   <body>
-    <script type="module" src="./${jsFileName}"></script>
+    <script data-banderdash-source="${jsFileName}">
+${jsSource}
+    </script>
     <${tagName}></${tagName}>
   </body>
 </html>
@@ -26,4 +30,8 @@ export function renderPreviewHtml(input: RenderPreviewHtmlInput): string {
 
 function escapeHtml(value: string): string {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+}
+
+function escapeScript(value: string): string {
+  return value.replaceAll("</script", "<\\/script");
 }
